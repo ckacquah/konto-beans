@@ -1,0 +1,10 @@
+[submodule "deps/kontomire"]
+	path = deps/kontomire
+	url = git@github.com:ckacquah/kontomire.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = git@github.com:ckacquah/imgui.git
+	branch = docking
+[submodule "deps/glfw"]
+	path = deps/glfw
+	url = git@github.com:glfw/glfw.git
