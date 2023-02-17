@@ -5,6 +5,7 @@
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
 #include <glad/glad.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -15,6 +16,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <kontomire.h>
+
+#include "konto/scene/scene.h"
 
 int main()
 {
@@ -45,6 +50,7 @@ int main()
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+    io.IniFilename = "editor.ini";
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -60,65 +66,62 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 420");
     ImGui_ImplGlfw_InitForOpenGL(window, true);
 
-    float zoom{};
-    double delta{};
-    float yaw{0.0f};
-    float pitch{0.0f};
+    std::shared_ptr<Knt::FrameBuffer> framebuffer{};
 
-    glm::vec4 quad_color{glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)};
-    glm::vec4 line_color{glm::vec4(0.2f, 1.0f, 0.0f, 1.0f)};
-    glm::vec4 circle_color{glm::vec4(1.0f, 0.0f, 0.5f, 1.0f)};
-    glm::vec4 background_color{glm::vec4(0.15f, 0.15f, 0.15f, 1.0f)};
+    Knt::FramebufferSpecification framebuffer_specs{};
 
-    glm::vec2 square_size{glm::vec2(1.0f, 1.0f)};
-    glm::vec2 square_size_prev{glm::vec2(1.0f, 1.0f)};
+    framebuffer_specs.attachments = {Knt::FramebufferTextureFormat::DEPTH, Knt::FramebufferTextureFormat::RGBA8,
+                                     Knt::FramebufferTextureFormat::RED_INTEGER};
+    framebuffer_specs.width = 800;
+    framebuffer_specs.height = 600;
+    framebuffer = Knt::FrameBuffer::create(framebuffer_specs);
 
-    glm::vec3 square_position{glm::vec3(0.0f, 0.0f, -1.0f)};
-    glm::vec3 square_position_prev{glm::vec3(0.0f, 0.0f, 1.0f)};
+    Konto::Scene scene{};
+    scene.resize_viewport(800, 600);
 
-    glm::vec2 circle_size{glm::vec2(0.725f, 0.75f)};
-    glm::vec3 circle_position{glm::vec3(-1.0f, 0.0f, 1.0f)};
+    auto library = std::make_shared<Knt::ShaderLibrary>();
+    library->add("quad", Knt::Shader::create("assets/shaders/2D/quad.glsl"));
+    library->add("line", Knt::Shader::create("assets/shaders/2D/line.glsl"));
+    library->add("circle", Knt::Shader::create("assets/shaders/2D/circle.glsl"));
+
+    Knt::Renderer::set_line_width(1.0f);
+    Knt::Renderer2D::init(library);
 
     while (!glfwWindowShouldClose(window))
     {
+        glfwPollEvents();
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+        framebuffer->bind();
+
+        Knt::Renderer::set_clear_color(glm::vec4(0.5f, 0.0f, 1.0f, 1.0f));
+        Knt::Renderer::clear();
+
+        scene.update(1.0f);
+
+        framebuffer->clear_attachment(1, -1);
+        framebuffer->unbind();
+
+        uint32_t texture_id = framebuffer->color_attachment();
+
         ImGui::Begin("Playground Viewport");
         {
-            ImGui::ColorEdit3("Quad Color", const_cast<float*>(glm::value_ptr(quad_color)));
-            ImGui::ColorEdit3("Line Color", const_cast<float*>(glm::value_ptr(line_color)));
-            ImGui::ColorEdit3("Circle Color", const_cast<float*>(glm::value_ptr(circle_color)));
-            ImGui::ColorEdit3("Background Color", const_cast<float*>(glm::value_ptr(background_color)));
-
-            ImGui::Separator();
-
-            ImGui::SliderFloat2("Square size", reinterpret_cast<float*>(&square_size), 0.0f, 1.0f, "%.3f");
-            ImGui::SliderFloat3("Square position", reinterpret_cast<float*>(&square_position), -2.0f, 2.0f, "%.3f");
-
-            ImGui::Separator();
-
-            ImGui::SliderFloat2("Circle size", reinterpret_cast<float*>(&circle_size), 0.0f, 1.0f, "%.3f");
-            ImGui::SliderFloat3("Circle position", reinterpret_cast<float*>(&circle_position), -2.0f, 2.0f, "%.3f");
-
-            ImGui::Separator();
-
-            ImGui::SliderFloat("Yaw", &yaw, -180.0f, 180.0f, "%.3f");
-            ImGui::SliderFloat("Pitch", &pitch, -90.0f, 90.0f, "%.3f");
-
-            ImGui::Separator();
-
-            ImGui::SliderFloat("Zoom", &zoom, 0.0f, 45.0f, "%.3f");
-            ImGui::Separator();
+            ImGui::BeginChild("Viewport");
+            ImGui::Image(reinterpret_cast<void*>(texture_id), ImGui::GetWindowSize(), ImVec2{0, 1}, ImVec2{1, 0});
+            ImGui::EndChild();
         }
         ImGui::End();
 
         ImGui::Render();
 
-        glViewport(0, 0, 800, 600);
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -134,13 +137,13 @@ int main()
         }
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;
