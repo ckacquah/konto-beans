@@ -28,10 +28,21 @@ endif()
 
 message(STATUS "Started CMake for ${KONTO_BEANS} v${PROJECT_VERSION}...\n")
 
+configure_file(${PROJECT_SOURCE_DIR}/assets/config/editor.ini editor.ini COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/assets/textures/texture.jpg assets/textures/texture.jpg COPYONLY)
+
+configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/flat-color.glsl assets/shaders/flat-color.glsl COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/basic-texture.glsl assets/shaders/basic-texture.glsl COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/quad.glsl assets/shaders/2D/quad.glsl COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/line.glsl assets/shaders/2D/line.glsl COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/circle.glsl assets/shaders/2D/circle.glsl COPYONLY)
+
 add_library(
     ${KONTO_BEANS}
-    ${PROJECT_SOURCE_DIR}/include/konto.h
     ${PROJECT_SOURCE_DIR}/src/konto/konto.cc
+    ${PROJECT_SOURCE_DIR}/src/konto/scene/scene.cc
+    ${PROJECT_SOURCE_DIR}/include/konto.h
+    ${PROJECT_SOURCE_DIR}/include/konto/scene/scene.h
 )
 
 target_include_directories(${KONTO_BEANS} PUBLIC ${PROJECT_SOURCE_DIR}/deps)
