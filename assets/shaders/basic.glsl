@@ -18,7 +18,6 @@ struct VertexOutput
 
 layout (location = 0) out VertexOutput Output;
 
-uniform mat4 Model;
 uniform mat4 View_Projection;
 
 void main()
@@ -26,7 +25,7 @@ void main()
    Output.Texture_Index = Texture_Index;
    Output.Texture_Coordinates = Texture_Coordinates;
 
-   gl_Position = View_Projection * Model * vec4(Position, 1.0);
+   gl_Position = View_Projection * vec4(Position, 1.0);
 }
 
 #type fragment
