@@ -4,7 +4,6 @@
 #include <entt/entt.hpp>
 #include <kontomire.h>
 
-
 #include "konto/core/camera.h"
 
 namespace Konto
@@ -15,19 +14,13 @@ class Entity;
 class Scene
 {
   private:
-    SceneCamera camera_;
     entt::registry registry_;
 
-    void render_scene(const std::shared_ptr<SceneCamera>& camera);
-
   public:
-    Scene();
+    Scene() = default;
     ~Scene() = default;
 
-    void stop();
-    void start();
     void update(float timestep);
-    void update(float timestep, const std::shared_ptr<SceneCamera>& camera);
 
     void destroy_entity(Entity entity);
     Entity create_entity(const std::string& name);

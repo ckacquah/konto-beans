@@ -78,9 +78,15 @@ int main()
 
     Konto::Scene scene{};
 
+    auto quad = scene.create_entity("Quad Entity");
+    auto circle = scene.create_entity("Circle Entity");
     auto camera = scene.create_entity("Camera Entity");
+
+    quad.add<Konto::SpriteRendererComponent>();
+    circle.add<Konto::CircleRendererComponent>();
     camera.add<Konto::CameraComponent>();
 
+    // Setup scene camera
     auto& component = camera.get<Konto::CameraComponent>();
     component.primary = true;
     component.camera.set_viewport_size(800, 600);
@@ -90,6 +96,27 @@ int main()
     glm::vec3 camera_scale{transform.scale};
     glm::vec3 camera_rotation{transform.rotation};
     glm::vec3 camera_translation{transform.translation};
+
+    // Setup scene quad
+    auto& quad_sprite = quad.get<Konto::SpriteRendererComponent>();
+    quad_sprite.color = glm::vec4(0.5f, 1.0f, 0.2f, 1.0f);
+    quad_sprite.texture = Knt::Texture2D::load("assets/textures/texture.jpg", "basic-texture");
+
+    auto& quad_transform = quad.get<Konto::TransformComponent>();
+
+    glm::vec3 quad_scale{quad_transform.scale};
+    glm::vec3 quad_rotation{quad_transform.rotation};
+    glm::vec3 quad_translation{quad_transform.translation};
+
+    // Setup scene circle
+    auto& circle_sprite = circle.get<Konto::CircleRendererComponent>();
+    circle_sprite.color = glm::vec4(0.5f, 0.0f, 0.5f, 1.0f);
+
+    auto& circle_transform = circle.get<Konto::TransformComponent>();
+
+    glm::vec3 circle_scale{circle_transform.scale};
+    glm::vec3 circle_rotation{circle_transform.rotation};
+    glm::vec3 circle_translation{circle_transform.translation};
 
     scene.resize_viewport(800, 600);
 
@@ -120,6 +147,14 @@ int main()
         transform.rotation = camera_rotation;
         transform.translation = camera_translation;
 
+        quad_transform.scale = quad_scale;
+        quad_transform.rotation = quad_rotation;
+        quad_transform.translation = quad_translation;
+
+        circle_transform.scale = circle_scale;
+        circle_transform.rotation = circle_rotation;
+        circle_transform.translation = circle_translation;
+
         scene.update(1.0f);
 
         framebuffer->clear_attachment(1, -1);
@@ -140,6 +175,22 @@ int main()
             ImGui::SliderFloat3("Scale", reinterpret_cast<float*>(&camera_scale), -2.0f, 2.0f, "%.3f");
             ImGui::SliderFloat3("Rotation", reinterpret_cast<float*>(&camera_rotation), -2.0f, 2.0f, "%.3f");
             ImGui::SliderFloat3("Translation", reinterpret_cast<float*>(&camera_translation), -2.0f, 2.0f, "%.3f");
+        }
+        ImGui::End();
+
+        ImGui::Begin("Quad Settings");
+        {
+            ImGui::SliderFloat3("Scale", reinterpret_cast<float*>(&quad_scale), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Rotation", reinterpret_cast<float*>(&quad_rotation), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Translation", reinterpret_cast<float*>(&quad_translation), -2.0f, 2.0f, "%.3f");
+        }
+        ImGui::End();
+
+        ImGui::Begin("Circle Settings");
+        {
+            ImGui::SliderFloat3("Scale", reinterpret_cast<float*>(&circle_scale), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Rotation", reinterpret_cast<float*>(&circle_rotation), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Translation", reinterpret_cast<float*>(&circle_translation), -2.0f, 2.0f, "%.3f");
         }
         ImGui::End();
 
