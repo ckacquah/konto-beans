@@ -27,6 +27,7 @@ if(MSVC)
 endif()
 
 message(STATUS "Started CMake for ${KONTO_BEANS} v${PROJECT_VERSION}...\n")
+message(STATUS "Started CMake for ${KONTO_EDITOR} v${PROJECT_VERSION}...\n")
 
 configure_file(${PROJECT_SOURCE_DIR}/assets/config/editor.ini editor.ini COPYONLY)
 configure_file(${PROJECT_SOURCE_DIR}/assets/textures/texture.jpg assets/textures/texture.jpg COPYONLY)
@@ -47,6 +48,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/include/konto/core/entity.h
     ${PROJECT_SOURCE_DIR}/include/konto/core/camera.h
     ${PROJECT_SOURCE_DIR}/include/konto/components/common.h
+    ${PROJECT_SOURCE_DIR}/include/konto/components/renderer2d.h
 )
 
 target_include_directories(${KONTO_BEANS} PUBLIC ${PROJECT_SOURCE_DIR}/deps)
