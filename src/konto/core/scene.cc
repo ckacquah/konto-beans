@@ -53,7 +53,7 @@ void Scene::destroy_entity(Entity entity)
 
 Entity Scene::create_entity(const std::string& name)
 {
-    Entity entity = {registry_.create(), std::shared_ptr<Scene>(this)};
+    Entity entity = {registry_.create(), this};
     entity.add<TransformComponent>();
     auto& tag = entity.add<TagComponent>();
     tag.tag = name.empty() ? "Entity" : name;
