@@ -13,40 +13,40 @@ namespace Konto
 class Entity
 {
   private:
+    Scene* scene_ptr_;
     entt::entity handle_{entt::null};
-    std::shared_ptr<Scene> scene_{nullptr};
 
   public:
     Entity() = default;
     Entity(const Entity& other) = default;
-    Entity(entt::entity handle, const std::shared_ptr<Scene>& scene) : handle_(handle), scene_(scene)
+    Entity(entt::entity handle, Scene* scene) : handle_(handle), scene_ptr_(scene)
     {
     }
 
     template <typename T> T& get()
     {
-        return scene_->registry_.get<T>(handle_);
+        return scene_ptr_->registry_.get<T>(handle_);
     }
 
     template <typename T> bool has()
     {
-        return scene_->registry_.has<T>(handle_);
+        return scene_ptr_->registry_.has<T>(handle_);
     }
 
     template <typename T> void remove()
     {
-        scene_->registry_.remove<T>(handle_);
+        scene_ptr_->registry_.remove<T>(handle_);
     }
 
     template <typename T, typename... Args> T& add(Args&&... args)
     {
-        T& component = scene_->registry_.emplace<T>(handle_, std::forward<Args>(args)...);
+        T& component = scene_ptr_->registry_.emplace<T>(handle_, std::forward<Args>(args)...);
         return component;
     }
 
     template <typename T, typename... Args> T& add_or_replace(Args&&... args)
     {
-        T& component = scene_->registry_.emplace_or_replace<T>(handle_, std::forward<Args>(args)...);
+        T& component = scene_ptr_->registry_.emplace_or_replace<T>(handle_, std::forward<Args>(args)...);
         return component;
     }
 

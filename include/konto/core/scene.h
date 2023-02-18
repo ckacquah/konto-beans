@@ -1,6 +1,8 @@
 #ifndef __KONTO_SCENE_H__
 #define __KONTO_SCENE_H__
 
+#include <memory>
+
 #include <entt/entt.hpp>
 #include <kontomire.h>
 
@@ -18,7 +20,6 @@ class Scene
 
   public:
     Scene() = default;
-    ~Scene() = default;
 
     void update(float timestep);
 
