@@ -11,7 +11,6 @@ layout(location = 1) in vec3 Position;
 layout(location = 2) in float Texture_Index;
 layout(location = 3) in vec2 Texture_Coordinates;
 
-uniform mat4 Model;
 uniform mat4 View_Projection;
 
 struct VertexOutput
@@ -29,7 +28,7 @@ void main()
 	Output.Texture_Coordinates = Texture_Coordinates;
 	Output.Texture_Index = Texture_Index;
 
-	gl_Position = View_Projection * Model * vec4(Position, 1.0);
+	gl_Position = View_Projection * vec4(Position, 1.0);
 }
 
 #type fragment

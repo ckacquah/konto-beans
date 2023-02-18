@@ -8,3 +8,6 @@
 [submodule "deps/glfw"]
 	path = deps/glfw
 	url = git@github.com:glfw/glfw.git
+[submodule "deps/entt"]
+	path = deps/entt
+	url = git@github.com:skypjack/entt.git

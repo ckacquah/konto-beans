@@ -19,7 +19,7 @@
 
 #include <kontomire.h>
 
-#include "konto/scene/scene.h"
+#include "konto.h"
 
 int main()
 {
@@ -77,6 +77,20 @@ int main()
     framebuffer = Knt::FrameBuffer::create(framebuffer_specs);
 
     Konto::Scene scene{};
+
+    auto camera = scene.create_entity("Camera Entity");
+    camera.add<Konto::CameraComponent>();
+
+    auto& component = camera.get<Konto::CameraComponent>();
+    component.primary = true;
+    component.camera.set_viewport_size(800, 600);
+
+    auto& transform = camera.get<Konto::TransformComponent>();
+
+    glm::vec3 camera_scale{transform.scale};
+    glm::vec3 camera_rotation{transform.rotation};
+    glm::vec3 camera_translation{transform.translation};
+
     scene.resize_viewport(800, 600);
 
     auto library = std::make_shared<Knt::ShaderLibrary>();
@@ -102,6 +116,10 @@ int main()
         Knt::Renderer::set_clear_color(glm::vec4(0.5f, 0.0f, 1.0f, 1.0f));
         Knt::Renderer::clear();
 
+        transform.scale = camera_scale;
+        transform.rotation = camera_rotation;
+        transform.translation = camera_translation;
+
         scene.update(1.0f);
 
         framebuffer->clear_attachment(1, -1);
@@ -114,6 +132,14 @@ int main()
             ImGui::BeginChild("Viewport");
             ImGui::Image(reinterpret_cast<void*>(texture_id), ImGui::GetWindowSize(), ImVec2{0, 1}, ImVec2{1, 0});
             ImGui::EndChild();
+        }
+        ImGui::End();
+
+        ImGui::Begin("Camera Settings");
+        {
+            ImGui::SliderFloat3("Scale", reinterpret_cast<float*>(&camera_scale), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Rotation", reinterpret_cast<float*>(&camera_rotation), -2.0f, 2.0f, "%.3f");
+            ImGui::SliderFloat3("Translation", reinterpret_cast<float*>(&camera_translation), -2.0f, 2.0f, "%.3f");
         }
         ImGui::End();
 
