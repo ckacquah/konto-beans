@@ -56,7 +56,14 @@ target_include_directories(${KONTO_BEANS} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(
     ${KONTO_EDITOR}
+    ${PROJECT_SOURCE_DIR}/src/editor/editor.h
     ${PROJECT_SOURCE_DIR}/src/editor/editor.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/window.h
+    ${PROJECT_SOURCE_DIR}/src/editor/window.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.h
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.h
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.cc
 )
 
 target_include_directories(${KONTO_EDITOR} PUBLIC ${PROJECT_SOURCE_DIR}/deps)

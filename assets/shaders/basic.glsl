@@ -31,7 +31,6 @@ void main()
 #type fragment
 #version 420 core
 
-
 struct VertexOutput
 {
    vec2 Texture_Coordinates;

@@ -70,7 +70,6 @@ uniform sampler2D Textures[32];
 
 void main()
 {
-    // Calculate distance and fill circle with white
     float distance = 1.0 - length(Input.LocalPosition);
 	float alpha = smoothstep(0.0, Input.Fade, distance);
 	alpha *= smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance);
@@ -78,7 +77,6 @@ void main()
 	if (alpha <= 0)
 		discard;
 
-    // Set output color
     Color = Input.Color;
 	Color.a *= alpha;
 

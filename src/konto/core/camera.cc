@@ -15,6 +15,12 @@ SceneCamera::ProjectionType SceneCamera::projection_type() const
     return projection_type_;
 }
 
+void SceneCamera::set_projection_type(ProjectionType type)
+{
+    projection_type_ = type;
+    recalculate();
+}
+
 float SceneCamera::far_clip() const
 {
     return (projection_type_ == ProjectionType::ORTHOGRAPHIC) ? orthographic_far_ : perspective_far_;
