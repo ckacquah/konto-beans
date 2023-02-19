@@ -30,7 +30,8 @@ class Entity
 
     template <typename T> bool has()
     {
-        return scene_ptr_->registry_.has<T>(handle_);
+        auto&& storage = scene_ptr_->registry_.storage<T>();
+        return storage.contains(handle_);
     }
 
     template <typename T> void remove()
@@ -53,6 +54,11 @@ class Entity
     operator entt::entity() const
     {
         return handle_;
+    }
+
+    operator bool() const
+    {
+        return handle_ != entt::null;
     }
 };
 
