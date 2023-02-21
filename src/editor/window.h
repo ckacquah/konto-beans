@@ -27,7 +27,7 @@ class Window
     static void end();
     static void begin();
     static void destroy();
-    static bool close();
+    static bool is_closed();
     static void start(const std::string& title, uint32_t width, uint32_t height);
 
     static uint32_t width()

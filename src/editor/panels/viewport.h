@@ -45,7 +45,7 @@ class ViewportPanel
 
   public:
     static void render();
-    static void resize_viewport(uint32_t width, uint32_t height);
+    static void resize(uint32_t width, uint32_t height);
     static void init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t height);
 
     static ViewportPanelData& viewport_data()

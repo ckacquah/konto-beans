@@ -60,6 +60,8 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/src/editor/editor.cc
     ${PROJECT_SOURCE_DIR}/src/editor/window.h
     ${PROJECT_SOURCE_DIR}/src/editor/window.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/menus/main.h
+    ${PROJECT_SOURCE_DIR}/src/editor/menus/main.cc
     ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.h
     ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.cc
     ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.h

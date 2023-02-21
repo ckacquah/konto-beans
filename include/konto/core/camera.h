@@ -16,7 +16,7 @@ class SceneCamera : public Knt::Camera
     };
 
   private:
-    ProjectionType projection_type_{ProjectionType::PERSPECTIVE};
+    ProjectionType projection_type_{ProjectionType::ORTHOGRAPHIC};
 
     float perspective_far_{1000.0f};
     float perspective_near_{0.01f};
@@ -34,7 +34,8 @@ class SceneCamera : public Knt::Camera
     SceneCamera();
     ~SceneCamera() = default;
 
-    ProjectionType projection_type() const;
+    bool is_perspective() const;
+    bool is_orthographic() const;
     void set_projection_type(ProjectionType type);
 
     float far_clip() const;

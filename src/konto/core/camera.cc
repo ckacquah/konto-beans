@@ -10,9 +10,14 @@ SceneCamera::SceneCamera()
     recalculate();
 }
 
-SceneCamera::ProjectionType SceneCamera::projection_type() const
+bool SceneCamera::is_perspective() const
 {
-    return projection_type_;
+    return projection_type_ == SceneCamera::ProjectionType::PERSPECTIVE;
+}
+
+bool SceneCamera::is_orthographic() const
+{
+    return projection_type_ == SceneCamera::ProjectionType::ORTHOGRAPHIC;
 }
 
 void SceneCamera::set_projection_type(ProjectionType type)
