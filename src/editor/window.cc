@@ -43,7 +43,7 @@ void Window::end()
     glfwSwapBuffers(context_.handle);
 }
 
-bool Window::close()
+bool Window::is_closed()
 {
     return glfwWindowShouldClose(context_.handle);
 }

@@ -31,7 +31,7 @@ class Scene
     Entity create_entity(const std::string& name);
     void foreach_entity(std::function<void(Entity)> callback);
 
-    void resize_viewport(uint32_t width, uint32_t height);
+    void resize(uint32_t width, uint32_t height);
 
     friend class Entity;
 };

@@ -63,8 +63,8 @@ Entity Scene::create_entity(const std::string& name)
 {
     Entity entity = {registry_.create(), this};
     entity.add<TransformComponent>();
-    auto& tag = entity.add<TagComponent>();
-    tag.tag = name.empty() ? "Entity" : name;
+    auto& component = entity.add<TagComponent>();
+    component.tag = name.empty() ? "Entity" : name;
     return entity;
 }
 
@@ -73,7 +73,7 @@ void Scene::foreach_entity(std::function<void(Entity)> callback)
     registry_.each([&](auto entity_id) { callback({entity_id, this}); });
 }
 
-void Scene::resize_viewport(uint32_t width, uint32_t height)
+void Scene::resize(uint32_t width, uint32_t height)
 {
     auto view = registry_.view<TransformComponent, CameraComponent>();
     for (auto entity : view)

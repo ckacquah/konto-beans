@@ -12,7 +12,7 @@ ViewportPanelData ViewportPanel::context_{};
 
 void ViewportPanel::render()
 {
-    context_.scene->resize_viewport(context_.width, context_.height);
+    context_.scene->resize(context_.width, context_.height);
     context_.framebuffer->bind();
 
     Knt::Renderer::set_clear_color(context_.clear_color);
@@ -28,7 +28,7 @@ void ViewportPanel::render()
 void ViewportPanel::init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t height)
 {
     context_.scene = scene;
-    resize_viewport(width, height);
+    resize(width, height);
 
     Knt::FramebufferSpecification framebuffer_specs{};
     framebuffer_specs.width = width;
@@ -47,7 +47,7 @@ void ViewportPanel::init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t 
     Knt::Renderer2D::init(library);
 }
 
-void ViewportPanel::resize_viewport(uint32_t width, uint32_t height)
+void ViewportPanel::resize(uint32_t width, uint32_t height)
 {
     context_.width = width;
     context_.height = height;
@@ -56,34 +56,31 @@ void ViewportPanel::resize_viewport(uint32_t width, uint32_t height)
 
 void ViewportPanel::render_viewport()
 {
-    if (ImGui::Begin("Editor Viewport"))
+    ImGui::Begin("Viewport");
     {
-        if (ImGui::BeginCombo("Camera", context_.camera.projection_type() == SceneCamera::ProjectionType::ORTHOGRAPHIC
-                                            ? "Orthographic"
-                                            : "Perspective"))
+        if (ImGui::BeginCombo("Projection", context_.camera.is_orthographic() ? "Orthographic" : "Perspective"))
         {
-            ImGui::PushID((void*)&context_.camera);
-            if (ImGui::Selectable("Orthographic"))
+            if (ImGui::Selectable("Orthographic", context_.camera.is_orthographic()))
             {
                 context_.camera.set_projection_type(SceneCamera::ProjectionType::ORTHOGRAPHIC);
                 context_.scene->update(context_.camera, context_.camera_transform());
             }
-            if (ImGui::Selectable("Perspective"))
+            if (ImGui::Selectable("Perspective", context_.camera.is_perspective()))
             {
                 context_.camera.set_projection_type(SceneCamera::ProjectionType::PERSPECTIVE);
                 context_.scene->update(context_.camera, context_.camera_transform());
             }
-            ImGui::PopID();
             ImGui::EndCombo();
         }
-        if (ImGui::BeginChild("Viewport"))
+
+        ImGui::BeginChild(context_.camera.is_orthographic() ? "Orthographic Viewport" : "Perspective Viewport");
         {
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
-            ImGui::EndChild();
         }
-        ImGui::End();
+        ImGui::EndChild();
     }
+    ImGui::End();
 }
 
 } // namespace Konto::Editor
