@@ -12,12 +12,26 @@
 namespace Konto
 {
 
+struct UUIDComponent
+{
+    uint64_t id;
+
+    UUIDComponent() = default;
+    UUIDComponent(const UUIDComponent&) = default;
+    UUIDComponent(uint64_t uuid) : id(uuid)
+    {
+    }
+};
+
 struct TagComponent
 {
     std::string tag;
 
     TagComponent() = default;
     TagComponent(const TagComponent&) = default;
+    TagComponent(const std::string& title) : tag(title)
+    {
+    }
 };
 
 struct TransformComponent

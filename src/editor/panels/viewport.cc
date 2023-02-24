@@ -8,7 +8,7 @@
 namespace Konto::Editor
 {
 
-ViewportPanelData ViewportPanel::context_{};
+ViewportPanelContext ViewportPanel::context_{};
 
 void ViewportPanel::render()
 {
@@ -18,7 +18,7 @@ void ViewportPanel::render()
     Knt::Renderer::set_clear_color(context_.clear_color);
     Knt::Renderer::clear();
 
-    context_.scene->update(context_.camera, context_.camera_transform());
+    context_.scene->render(context_.camera.projection(), context_.camera_transform());
     context_.framebuffer->clear_attachment(1, -1);
     context_.framebuffer->unbind();
 
@@ -63,12 +63,10 @@ void ViewportPanel::render_viewport()
             if (ImGui::Selectable("Orthographic", context_.camera.is_orthographic()))
             {
                 context_.camera.set_projection_type(SceneCamera::ProjectionType::ORTHOGRAPHIC);
-                context_.scene->update(context_.camera, context_.camera_transform());
             }
             if (ImGui::Selectable("Perspective", context_.camera.is_perspective()))
             {
                 context_.camera.set_projection_type(SceneCamera::ProjectionType::PERSPECTIVE);
-                context_.scene->update(context_.camera, context_.camera_transform());
             }
             ImGui::EndCombo();
         }
