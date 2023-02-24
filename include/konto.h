@@ -6,5 +6,6 @@
 #include "konto/core/camera.h"
 #include "konto/core/entity.h"
 #include "konto/core/scene.h"
+#include "konto/core/uuid.h"
 
 #endif // __KONTO_H__

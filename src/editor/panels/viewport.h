@@ -10,7 +10,7 @@
 namespace Konto::Editor
 {
 
-struct ViewportPanelData
+struct ViewportPanelContext
 {
     float width{};
     float height{};
@@ -26,8 +26,8 @@ struct ViewportPanelData
 
     std::shared_ptr<Knt::FrameBuffer> framebuffer{};
 
-    ViewportPanelData() = default;
-    ViewportPanelData(const ViewportPanelData& other) = default;
+    ViewportPanelContext() = default;
+    ViewportPanelContext(const ViewportPanelContext& other) = default;
 
     glm::mat4 camera_transform()
     {
@@ -39,7 +39,7 @@ struct ViewportPanelData
 class ViewportPanel
 {
   private:
-    static ViewportPanelData context_;
+    static ViewportPanelContext context_;
 
     static void render_viewport();
 
@@ -48,7 +48,7 @@ class ViewportPanel
     static void resize(uint32_t width, uint32_t height);
     static void init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t height);
 
-    static ViewportPanelData& viewport_data()
+    static ViewportPanelContext& viewport_data()
     {
         return context_;
     }

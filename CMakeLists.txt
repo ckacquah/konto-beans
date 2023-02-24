@@ -41,9 +41,11 @@ configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/circle.glsl assets/shader
 add_library(
     ${KONTO_BEANS}
     ${PROJECT_SOURCE_DIR}/src/konto/konto.cc
+    ${PROJECT_SOURCE_DIR}/src/konto/core/uuid.cc
     ${PROJECT_SOURCE_DIR}/src/konto/core/scene.cc
     ${PROJECT_SOURCE_DIR}/src/konto/core/camera.cc
     ${PROJECT_SOURCE_DIR}/include/konto.h
+    ${PROJECT_SOURCE_DIR}/include/konto/core/uuid.h
     ${PROJECT_SOURCE_DIR}/include/konto/core/scene.h
     ${PROJECT_SOURCE_DIR}/include/konto/core/entity.h
     ${PROJECT_SOURCE_DIR}/include/konto/core/camera.h
@@ -66,6 +68,8 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.cc
     ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.h
     ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.h
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.cc
 )
 
 target_include_directories(${KONTO_EDITOR} PUBLIC ${PROJECT_SOURCE_DIR}/deps)

@@ -7,7 +7,7 @@
 namespace Konto::Editor
 {
 
-ScenePanelData ScenePanel::context_{};
+ScenePanelContext ScenePanel::context_{};
 
 void ScenePanel::render()
 {
@@ -25,7 +25,7 @@ void ScenePanel::render_entities()
 {
     ImGui::Begin("Scene Hierarchy");
     {
-        context_.scene->foreach_entity([&](Entity entity) {
+        context_.scene->foreach ([&](Entity entity) {
             if (entity)
             {
                 ScenePanel::render_entity(entity);
@@ -75,6 +75,52 @@ void ScenePanel::render_properties()
                     ImGui::TreePop();
                 }
             }
+            if (context_.selected_entity.has<CameraComponent>())
+            {
+                auto& component = context_.selected_entity.get<CameraComponent>();
+                if (ImGui::TreeNodeEx("Camera", flags))
+                {
+                    if (ImGui::BeginCombo("Projection",
+                                          component.camera.is_orthographic() ? "Orthographic" : "Perspective"))
+                    {
+                        if (ImGui::Selectable("Orthographic", component.camera.is_orthographic()))
+                        {
+                            component.camera.set_projection_type(SceneCamera::ProjectionType::ORTHOGRAPHIC);
+                        }
+                        if (ImGui::Selectable("Perspective", component.camera.is_perspective()))
+                        {
+                            component.camera.set_projection_type(SceneCamera::ProjectionType::PERSPECTIVE);
+                        }
+                        ImGui::EndCombo();
+                    }
+                    static float near{component.camera.near_clip()}, far{component.camera.far_clip()};
+                    if (ImGui::DragFloat("Near", &near, 0.05, 0.0f, 0.0f, "%.2f"))
+                    {
+                        component.camera.set_near_clip(near);
+                    }
+                    if (ImGui::DragFloat("Far", &far, 0.05, 0.0f, 0.0f, "%.2f"))
+                    {
+                        component.camera.set_far_clip(far);
+                    }
+                    static float perspective_FOV{component.camera.perspective_FOV()},
+                        orthographic_size{component.camera.orthographic_size()};
+                    if (component.camera.is_perspective())
+                    {
+                        if (ImGui::DragFloat("Field Of View", &perspective_FOV, 0.5f, 0.0f, 0.0f, "%.1f"))
+                        {
+                            component.camera.set_perspective_FOV(near);
+                        }
+                    }
+                    else
+                    {
+                        if (ImGui::DragFloat("Orthographic Size", &orthographic_size, 0.5f, 0.0f, 0.0f, "%.1f"))
+                        {
+                            component.camera.set_orthographic_size(orthographic_size);
+                        }
+                    }
+                    ImGui::TreePop();
+                }
+            }
             if (context_.selected_entity.has<SpriteRendererComponent>())
             {
                 auto& component = context_.selected_entity.get<SpriteRendererComponent>();
@@ -104,7 +150,7 @@ void ScenePanel::render_properties()
 void ScenePanel::render_entity(Entity entity)
 {
     auto component = entity.get<TagComponent>();
-    if (ImGui::TreeNode(component.tag == "" ? "Unamed Entity" : component.tag.c_str()))
+    if (ImGui::TreeNode(component.tag == "" ? UNTITLED_ENTITY : component.tag.c_str()))
     {
         if (ImGui::IsItemClicked())
         {

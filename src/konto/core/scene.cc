@@ -2,15 +2,48 @@
 
 #include <imgui/imgui.h>
 
-#include "konto.h"
 #include "konto/components/common.h"
 #include "konto/components/renderer2d.h"
+#include "konto/core/entity.h"
 #include "konto/core/scene.h"
+#include "konto/core/uuid.h"
+
+#define ALL_COMPONENTS TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent
 
 namespace Konto
 {
 
-void Scene::update_scene()
+template <typename... Component>
+void Scene::copy(entt::registry& source, entt::registry& destination,
+                 std::unordered_map<uint64_t, entt::entity>& entities)
+{
+    (
+        [&]() {
+            for (auto old_entity : source.view<Component>())
+            {
+                entt::entity new_entity{entities.at(source.get<UUIDComponent>(old_entity).id)};
+                destination.emplace_or_replace<Component>(new_entity, source.get<Component>(old_entity));
+            }
+        }(),
+        ...);
+}
+
+std::shared_ptr<Scene> Scene::copy()
+{
+    auto scene{std::make_shared<Scene>()};
+
+    for (auto& old_entity : registry_.view<UUIDComponent>())
+    {
+        auto [tag_component, uuid_component] = registry_.get<TagComponent, UUIDComponent>(old_entity);
+        auto new_entity = scene->create(tag_component.tag, uuid_component.id);
+    }
+
+    copy<ALL_COMPONENTS>(registry_, scene->registry_, scene->entities_);
+
+    return scene;
+}
+
+void Scene::render()
 {
     {
         auto view = registry_.view<TransformComponent, SpriteRendererComponent>();
@@ -32,6 +65,12 @@ void Scene::update_scene()
     Knt::Renderer2D::end();
 }
 
+void Scene::render(const glm::mat4& view, const glm::mat4& projection)
+{
+    Knt::Renderer2D::begin(projection * view);
+    render();
+}
+
 void Scene::update()
 {
     auto view = registry_.view<TransformComponent, CameraComponent>();
@@ -45,30 +84,32 @@ void Scene::update()
         }
     }
 
-    update_scene();
+    render();
 }
 
-void Scene::update(const SceneCamera& camera, const glm::mat4& transform)
-{
-    Knt::Renderer2D::begin(transform * camera.projection());
-    update_scene();
-}
-
-void Scene::destroy_entity(Entity entity)
+void Scene::destroy(Entity entity)
 {
     registry_.destroy(entity);
 }
 
-Entity Scene::create_entity(const std::string& name)
+Entity Scene::create(const std::string& name)
+{
+    return create(name, UUID::generate());
+}
+
+Entity Scene::create(const std::string& name, uint64_t uuid)
 {
     Entity entity = {registry_.create(), this};
+
     entity.add<TransformComponent>();
-    auto& component = entity.add<TagComponent>();
-    component.tag = name.empty() ? "Entity" : name;
+    entity.add<UUIDComponent>(uuid);
+    entity.add<TagComponent>(name.empty() ? UNTITLED_ENTITY : name);
+
+    entities_[uuid] = entity;
     return entity;
 }
 
-void Scene::foreach_entity(std::function<void(Entity)> callback)
+void Scene::foreach (std::function<void(Entity)> callback)
 {
     registry_.each([&](auto entity_id) { callback({entity_id, this}); });
 }

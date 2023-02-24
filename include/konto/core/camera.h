@@ -45,10 +45,10 @@ class SceneCamera : public Knt::Camera
     void set_near_clip(float clip);
 
     float perspective_FOV() const;
-    float othorgraphic_size() const;
+    float orthographic_size() const;
 
     void set_perspective_FOV(float FOV);
-    void set_othorgraphic_size(float size);
+    void set_orthographic_size(float size);
 
     void set_viewport_size(uint32_t width, uint32_t height);
 };

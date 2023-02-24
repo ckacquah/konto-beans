@@ -10,19 +10,19 @@
 namespace Konto::Editor
 {
 
-struct ScenePanelData
+struct ScenePanelContext
 {
     Entity selected_entity{};
     std::shared_ptr<Scene> scene{};
 
-    ScenePanelData() = default;
-    ScenePanelData(const ScenePanelData& other) = default;
+    ScenePanelContext() = default;
+    ScenePanelContext(const ScenePanelContext& other) = default;
 };
 
 class ScenePanel
 {
   private:
-    static ScenePanelData context_;
+    static ScenePanelContext context_;
 
     static void render_entities();
     static void render_properties();

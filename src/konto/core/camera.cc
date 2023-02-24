@@ -69,7 +69,7 @@ float SceneCamera::perspective_FOV() const
     return perspective_FOV_;
 }
 
-float SceneCamera::othorgraphic_size() const
+float SceneCamera::orthographic_size() const
 {
     return orthographic_size_;
 }
@@ -80,7 +80,7 @@ void SceneCamera::set_perspective_FOV(float FOV)
     recalculate();
 }
 
-void SceneCamera::set_othorgraphic_size(float size)
+void SceneCamera::set_orthographic_size(float size)
 {
     orthographic_size_ = size;
     recalculate();

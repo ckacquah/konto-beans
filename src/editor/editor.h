@@ -3,6 +3,7 @@
 
 #include "menus/main.h"
 #include "panels/scene.h"
+#include "panels/simulation.h"
 #include "panels/viewport.h"
 #include "window.h"
 
