@@ -25,7 +25,6 @@ class ScenePanel
     static ScenePanelContext context_;
 
     static void render_entities();
-    static void render_properties();
     static void render_entity(Entity entity);
 
   public:

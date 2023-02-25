@@ -24,8 +24,8 @@ class Scene
     std::unordered_map<uint64_t, entt::entity> entities_;
 
     template <typename... Component>
-    static void copy(entt::registry& source, entt::registry& destination,
-                     std::unordered_map<uint64_t, entt::entity>& entities);
+    static void clone(entt::registry& source, entt::registry& destination,
+                      std::unordered_map<uint64_t, entt::entity>& entities);
 
   public:
     Scene() = default;
@@ -41,7 +41,7 @@ class Scene
     void destroy(Entity entity);
     void foreach (std::function<void(Entity)> callback);
 
-    std::shared_ptr<Scene> copy();
+    std::shared_ptr<Scene> clone();
 
     friend class Entity;
 };

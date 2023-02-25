@@ -14,8 +14,8 @@ namespace Konto
 {
 
 template <typename... Component>
-void Scene::copy(entt::registry& source, entt::registry& destination,
-                 std::unordered_map<uint64_t, entt::entity>& entities)
+void Scene::clone(entt::registry& source, entt::registry& destination,
+                  std::unordered_map<uint64_t, entt::entity>& entities)
 {
     (
         [&]() {
@@ -28,7 +28,7 @@ void Scene::copy(entt::registry& source, entt::registry& destination,
         ...);
 }
 
-std::shared_ptr<Scene> Scene::copy()
+std::shared_ptr<Scene> Scene::clone()
 {
     auto scene{std::make_shared<Scene>()};
 
@@ -38,7 +38,7 @@ std::shared_ptr<Scene> Scene::copy()
         auto new_entity = scene->create(tag_component.tag, uuid_component.id);
     }
 
-    copy<ALL_COMPONENTS>(registry_, scene->registry_, scene->entities_);
+    clone<ALL_COMPONENTS>(registry_, scene->registry_, scene->entities_);
 
     return scene;
 }
@@ -50,7 +50,12 @@ void Scene::render()
         for (auto entity : view)
         {
             auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-            Knt::Renderer2D::draw_quad(transform.transform(), sprite.texture, sprite.color);
+            if (sprite.enabled)
+            {
+                sprite.texture == nullptr
+                    ? Knt::Renderer2D::draw_quad(transform.transform(), sprite.color)
+                    : Knt::Renderer2D::draw_quad(transform.transform(), sprite.texture, sprite.color);
+            }
         }
     }
     {
@@ -58,7 +63,10 @@ void Scene::render()
         for (auto entity : view)
         {
             auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-            Knt::Renderer2D::draw_circle(transform.transform(), circle.color, circle.thickness, circle.fade);
+            if (circle.enabled)
+            {
+                Knt::Renderer2D::draw_circle(transform.transform(), circle.color, circle.thickness, circle.fade);
+            }
         }
     }
 
@@ -77,14 +85,12 @@ void Scene::update()
     for (auto entity : view)
     {
         auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-        if (camera.primary)
+        if (camera.primary && camera.enabled)
         {
-            Knt::Renderer2D::begin(transform.transform() * camera.camera.projection());
+            render(transform.transform(), camera.camera.projection());
             break;
         }
     }
-
-    render();
 }
 
 void Scene::destroy(Entity entity)

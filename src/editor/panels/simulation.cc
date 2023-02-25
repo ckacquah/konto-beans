@@ -11,7 +11,7 @@ void SimulationPanel::stop()
 
 void SimulationPanel::play()
 {
-    context_.scene_active = context_.scene->copy();
+    context_.scene_active = context_.scene->clone();
 }
 
 void SimulationPanel::pause()
@@ -67,7 +67,7 @@ void SimulationPanel::resize(uint32_t width, uint32_t height)
 void SimulationPanel::init(const std::shared_ptr<Scene>& scene, uint32_t width, uint32_t height)
 {
     context_.scene = scene;
-    context_.scene_active = context_.scene->copy();
+    context_.scene_active = context_.scene->clone();
     resize(width, height);
 
     Knt::FramebufferSpecification framebuffer_specs{};

@@ -88,7 +88,21 @@ void SceneCamera::set_orthographic_size(float size)
 
 void SceneCamera::set_viewport_size(uint32_t width, uint32_t height)
 {
-    aspect_ratio_ = static_cast<float>(width) / height;
+    if (!fixed_aspect_ratio)
+    {
+        set_aspect_ratio(static_cast<float>(width) / height);
+        recalculate();
+    }
+}
+
+float SceneCamera::aspect_ratio() const
+{
+    return aspect_ratio_;
+}
+
+void SceneCamera::set_aspect_ratio(float ratio)
+{
+    aspect_ratio_ = ratio;
     recalculate();
 }
 

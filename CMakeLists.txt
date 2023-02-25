@@ -68,6 +68,8 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.cc
     ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.h
     ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.cc
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/inspector.h
+    ${PROJECT_SOURCE_DIR}/src/editor/panels/inspector.cc
     ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.h
     ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.cc
 )

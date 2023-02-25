@@ -15,6 +15,8 @@ class SceneCamera : public Knt::Camera
         ORTHOGRAPHIC = 1
     };
 
+    bool fixed_aspect_ratio{false};
+
   private:
     ProjectionType projection_type_{ProjectionType::ORTHOGRAPHIC};
 
@@ -49,6 +51,9 @@ class SceneCamera : public Knt::Camera
 
     void set_perspective_FOV(float FOV);
     void set_orthographic_size(float size);
+
+    float aspect_ratio() const;
+    void set_aspect_ratio(float ratio);
 
     void set_viewport_size(uint32_t width, uint32_t height);
 };
