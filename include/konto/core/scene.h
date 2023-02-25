@@ -24,8 +24,8 @@ class Scene
     std::unordered_map<uint64_t, entt::entity> entities_;
 
     template <typename... Component>
-    static void clone(entt::registry& source, entt::registry& destination,
-                      std::unordered_map<uint64_t, entt::entity>& entities);
+    static void copy(entt::registry& source, entt::registry& destination,
+                     std::unordered_map<uint64_t, entt::entity>& entities);
 
   public:
     Scene() = default;
