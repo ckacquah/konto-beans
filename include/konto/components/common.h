@@ -25,6 +25,8 @@ struct UUIDComponent
 
 struct TagComponent
 {
+    bool enabled{true};
+
     std::string tag;
 
     TagComponent() = default;
@@ -36,9 +38,11 @@ struct TagComponent
 
 struct TransformComponent
 {
-    glm::vec3 scale = {1.0f, 1.0f, 1.0f};
-    glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
-    glm::vec3 translation = {0.0f, 0.0f, 0.0f};
+    bool enabled{true};
+
+    glm::vec3 scale{1.0f, 1.0f, 1.0f};
+    glm::vec3 rotation{0.0f, 0.0f, 0.0f};
+    glm::vec3 translation{0.0f, 0.0f, 0.0f};
 
     TransformComponent() = default;
     TransformComponent(const TransformComponent&) = default;
@@ -53,7 +57,8 @@ struct TransformComponent
 struct CameraComponent
 {
     SceneCamera camera;
-    bool primary = true;
+    bool enabled{true};
+    bool primary{true};
 
     CameraComponent() = default;
     CameraComponent(const CameraComponent&) = default;
