@@ -8,14 +8,12 @@
 #include "konto/core/scene.h"
 #include "konto/core/uuid.h"
 
-#define ALL_COMPONENTS TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent
-
 namespace Konto
 {
 
 template <typename... Component>
-void Scene::clone(entt::registry& source, entt::registry& destination,
-                  std::unordered_map<uint64_t, entt::entity>& entities)
+void Scene::copy(entt::registry& source, entt::registry& destination,
+                 std::unordered_map<uint64_t, entt::entity>& entities)
 {
     (
         [&]() {
@@ -38,7 +36,8 @@ std::shared_ptr<Scene> Scene::clone()
         auto new_entity = scene->create(tag_component.tag, uuid_component.id);
     }
 
-    clone<ALL_COMPONENTS>(registry_, scene->registry_, scene->entities_);
+    copy<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent>(
+        registry_, scene->registry_, scene->entities_);
 
     return scene;
 }
