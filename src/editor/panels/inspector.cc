@@ -142,6 +142,10 @@ template <> void InspectorPanel::render<CameraComponent>(CameraComponent& compon
 
     static float far{component.camera.far_clip()};
     static float near{component.camera.near_clip()};
+    static float aspect_ratio{component.camera.aspect_ratio()};
+    static float perspective_FOV{component.camera.perspective_FOV()};
+    static float orthographic_size{component.camera.orthographic_size()};
+
     if (ImGui::DragFloat("Near", &near, 0.05, 0.0f, 0.0f, "%.2f"))
     {
         component.camera.set_near_clip(near);
@@ -151,8 +155,6 @@ template <> void InspectorPanel::render<CameraComponent>(CameraComponent& compon
         component.camera.set_far_clip(far);
     }
 
-    static float perspective_FOV{component.camera.perspective_FOV()};
-    static float orthographic_size{component.camera.orthographic_size()};
     if (component.camera.is_perspective() &&
         ImGui::DragFloat("Field Of View", &perspective_FOV, 0.5f, 0.0f, 0.0f, "%.1f"))
     {
@@ -164,7 +166,6 @@ template <> void InspectorPanel::render<CameraComponent>(CameraComponent& compon
         component.camera.set_orthographic_size(orthographic_size);
     }
 
-    static float aspect_ratio{16 / 9};
     if (ImGui::Checkbox("Fixed Aspect Ratio", &component.camera.fixed_aspect_ratio))
     {
         component.camera.set_aspect_ratio(aspect_ratio);
