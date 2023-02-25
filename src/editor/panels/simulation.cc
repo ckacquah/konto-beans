@@ -51,25 +51,18 @@ void SimulationPanel::render()
         {
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
-            resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
+            context_.scene_active->resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
         }
         ImGui::EndChild();
     }
     ImGui::End();
 }
 
-void SimulationPanel::resize(uint32_t width, uint32_t height)
-{
-    context_.width = width;
-    context_.height = height;
-    context_.scene_active->resize(context_.width, context_.height);
-}
-
 void SimulationPanel::init(const std::shared_ptr<Scene>& scene, uint32_t width, uint32_t height)
 {
     context_.scene = scene;
     context_.scene_active = context_.scene->clone();
-    resize(width, height);
+    context_.scene_active->resize(width, height);
 
     Knt::FramebufferSpecification framebuffer_specs{};
     framebuffer_specs.width = width;

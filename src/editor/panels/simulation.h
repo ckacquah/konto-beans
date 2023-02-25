@@ -31,7 +31,6 @@ class SimulationPanel
     static void pause();
     static void update();
     static void render();
-    static void resize(uint32_t width, uint32_t height);
     static void init(const std::shared_ptr<Scene>& scene, uint32_t width, uint32_t height);
 };
 
