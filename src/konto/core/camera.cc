@@ -90,8 +90,7 @@ void SceneCamera::set_viewport_size(uint32_t width, uint32_t height)
 {
     if (!fixed_aspect_ratio)
     {
-        set_aspect_ratio(static_cast<float>(width) / height);
-        recalculate();
+        set_aspect_ratio(static_cast<float>(height) / width);
     }
 }
 

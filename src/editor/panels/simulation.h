@@ -12,9 +12,6 @@ namespace Konto::Editor
 
 struct SimulationPanelContext
 {
-    float width{};
-    float height{};
-
     std::shared_ptr<Scene> scene{};
     std::shared_ptr<Scene> scene_active{};
     std::shared_ptr<Knt::FrameBuffer> framebuffer{};

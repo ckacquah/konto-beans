@@ -51,6 +51,7 @@ void SimulationPanel::render()
         {
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
+            resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
         }
         ImGui::EndChild();
     }

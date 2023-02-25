@@ -12,7 +12,6 @@ ViewportPanelContext ViewportPanel::context_{};
 
 void ViewportPanel::render()
 {
-    context_.scene->resize(context_.width, context_.height);
     context_.framebuffer->bind();
 
     Knt::Renderer::set_clear_color(context_.clear_color);
@@ -49,8 +48,7 @@ void ViewportPanel::init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t 
 
 void ViewportPanel::resize(uint32_t width, uint32_t height)
 {
-    context_.width = width;
-    context_.height = height;
+    context_.scene->resize(width, height);
     context_.camera.set_viewport_size(width, height);
 }
 
@@ -75,6 +73,7 @@ void ViewportPanel::render_viewport()
         {
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
+            resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
         }
         ImGui::EndChild();
     }

@@ -12,9 +12,6 @@ namespace Konto::Editor
 
 struct ViewportPanelContext
 {
-    float width{};
-    float height{};
-
     SceneCamera camera{};
     std::shared_ptr<Scene> scene{};
 
