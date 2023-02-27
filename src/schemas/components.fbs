@@ -1,0 +1,63 @@
+namespace Konto.Serializable;
+
+struct Vec3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Color {
+  r:float;
+  g:float;
+  b:float;
+  a:float;
+}
+
+union Component { Transform, Camera, SpriteRenderer, CircleRenderer }
+
+struct Transform
+{
+    enabled:bool;
+
+    scale:Vec3;
+    rotation:Vec3;
+    translation:Vec3 ;
+}
+
+enum ProjectionType : int { PERSPECTIVE = 0, ORTHOGRAPHIC }
+
+struct Camera
+{
+    enabled:bool;
+    primary:bool;
+    fixed_aspect_ratio:bool;
+
+    aspect_ratio:float;
+
+    perspective_far:float;
+    perspective_near:float;
+    perspective_fov:float;
+
+    orthographic_far:float;
+    orthographic_near:float;
+    orthographic_size:float;
+    
+    projection_type:ProjectionType;
+}
+
+struct SpriteRenderer
+{
+    enabled:bool;
+
+    color:Color;
+    tiling_factor:float;
+}
+
+struct CircleRenderer
+{
+    enabled:bool;
+
+    color:Color;
+    fade:float;
+    thickness:float;
+}

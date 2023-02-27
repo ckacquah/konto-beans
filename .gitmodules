@@ -11,3 +11,9 @@
 [submodule "deps/entt"]
 	path = deps/entt
 	url = git@github.com:skypjack/entt.git
+[submodule "deps/flatbuffers"]
+	path = deps/flatbuffers
+	url = git@github.com:google/flatbuffers.git
+[submodule "deps/nativefiledialog"]
+	path = deps/nativefiledialog
+	url = git@github.com:btzy/nativefiledialog-extended.git
