@@ -22,7 +22,7 @@ class SceneCamera : public Knt::Camera
 
     float perspective_far_{1000.0f};
     float perspective_near_{0.01f};
-    float perspective_FOV_{glm::radians(45.0f)};
+    float perspective_fov_{glm::radians(45.0f)};
 
     float orthographic_far_{1.0f};
     float orthographic_near_{-1.0f};
@@ -35,21 +35,33 @@ class SceneCamera : public Knt::Camera
   public:
     SceneCamera();
     ~SceneCamera() = default;
+    SceneCamera(ProjectionType projection_type, float perspective_far, float perspective_near, float perspective_fov,
+                float orthographic_far, float orthographic_near, float orthographic_size, float aspect_ratio)
+        : projection_type_(projection_type), perspective_far_(perspective_far), perspective_near_(perspective_near),
+          perspective_fov_(perspective_fov), orthographic_far_(orthographic_far), orthographic_near_(orthographic_near),
+          orthographic_size_(orthographic_size), aspect_ratio_(aspect_ratio)
+    {
+        recalculate();
+    }
 
     bool is_perspective() const;
     bool is_orthographic() const;
     void set_projection_type(ProjectionType type);
 
-    float far_clip() const;
-    float near_clip() const;
+    float perspective_far() const;
+    float perspective_near() const;
+    float perspective_fov() const;
 
-    void set_far_clip(float clip);
-    void set_near_clip(float clip);
-
-    float perspective_FOV() const;
+    float orthographic_far() const;
+    float orthographic_near() const;
     float orthographic_size() const;
 
-    void set_perspective_FOV(float FOV);
+    void set_perspective_far(float far);
+    void set_perspective_near(float near);
+    void set_perspective_fov(float fov);
+
+    void set_orthographic_far(float far);
+    void set_orthographic_near(float near);
     void set_orthographic_size(float size);
 
     float aspect_ratio() const;

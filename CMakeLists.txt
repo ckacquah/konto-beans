@@ -29,53 +29,61 @@ endif()
 message(STATUS "Started CMake for ${KONTO_BEANS} v${PROJECT_VERSION}...\n")
 message(STATUS "Started CMake for ${KONTO_EDITOR} v${PROJECT_VERSION}...\n")
 
-configure_file(${PROJECT_SOURCE_DIR}/assets/config/editor.ini editor.ini COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/assets/textures/texture.jpg assets/textures/texture.jpg COPYONLY)
+configure_file(assets/config/editor.ini editor.ini COPYONLY)
+configure_file(assets/textures/texture.jpg assets/textures/texture.jpg COPYONLY)
 
-configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/flat.glsl assets/shaders/flat.glsl COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/basic.glsl assets/shaders/basic.glsl COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/quad.glsl assets/shaders/2D/quad.glsl COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/line.glsl assets/shaders/2D/line.glsl COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/assets/shaders/2D/circle.glsl assets/shaders/2D/circle.glsl COPYONLY)
+configure_file(src/shaders/flat.glsl assets/shaders/flat.glsl COPYONLY)
+configure_file(src/shaders/basic.glsl assets/shaders/basic.glsl COPYONLY)
+configure_file(src/shaders/2D/quad.glsl assets/shaders/2D/quad.glsl COPYONLY)
+configure_file(src/shaders/2D/line.glsl assets/shaders/2D/line.glsl COPYONLY)
+configure_file(src/shaders/2D/circle.glsl assets/shaders/2D/circle.glsl COPYONLY)
 
 add_library(
     ${KONTO_BEANS}
-    ${PROJECT_SOURCE_DIR}/src/konto/konto.cc
-    ${PROJECT_SOURCE_DIR}/src/konto/core/uuid.cc
-    ${PROJECT_SOURCE_DIR}/src/konto/core/scene.cc
-    ${PROJECT_SOURCE_DIR}/src/konto/core/camera.cc
-    ${PROJECT_SOURCE_DIR}/include/konto.h
-    ${PROJECT_SOURCE_DIR}/include/konto/core/uuid.h
-    ${PROJECT_SOURCE_DIR}/include/konto/core/scene.h
-    ${PROJECT_SOURCE_DIR}/include/konto/core/entity.h
-    ${PROJECT_SOURCE_DIR}/include/konto/core/camera.h
-    ${PROJECT_SOURCE_DIR}/include/konto/components/common.h
-    ${PROJECT_SOURCE_DIR}/include/konto/components/renderer2d.h
+    src/konto/konto.cc
+    src/konto/core/uuid.cc
+    src/konto/core/scene.cc
+    src/konto/core/camera.cc
+    src/konto/serialization/scene.cc
+    src/konto/serialization/components.cc
+    src/konto/serialization/serialization.cc
+    include/konto.h
+    include/konto/core/uuid.h
+    include/konto/core/scene.h
+    include/konto/core/entity.h
+    include/konto/core/camera.h
+    include/konto/components/common.h
+    include/konto/components/renderer2d.h
+    include/konto/serialization/scene.h
+    include/konto/serialization/components.h
+    include/konto/serialization/serialization.h
 )
 
-target_include_directories(${KONTO_BEANS} PUBLIC ${PROJECT_SOURCE_DIR}/deps)
-target_include_directories(${KONTO_BEANS} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${KONTO_BEANS} PUBLIC deps)
+target_include_directories(${KONTO_BEANS} PUBLIC include)
 
 add_executable(
     ${KONTO_EDITOR}
-    ${PROJECT_SOURCE_DIR}/src/editor/editor.h
-    ${PROJECT_SOURCE_DIR}/src/editor/editor.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/window.h
-    ${PROJECT_SOURCE_DIR}/src/editor/window.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/menus/main.h
-    ${PROJECT_SOURCE_DIR}/src/editor/menus/main.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.h
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/scene.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.h
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/viewport.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/inspector.h
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/inspector.cc
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.h
-    ${PROJECT_SOURCE_DIR}/src/editor/panels/simulation.cc
+    src/editor/editor.h
+    src/editor/editor.cc
+    src/editor/window.h
+    src/editor/window.cc
+    src/editor/menus/main.h
+    src/editor/menus/main.cc
+    src/editor/menus/dialogs.h
+    src/editor/menus/dialogs.cc
+    src/editor/panels/scene.h
+    src/editor/panels/scene.cc
+    src/editor/panels/viewport.h
+    src/editor/panels/viewport.cc
+    src/editor/panels/inspector.h
+    src/editor/panels/inspector.cc
+    src/editor/panels/simulation.h
+    src/editor/panels/simulation.cc
 )
 
-target_include_directories(${KONTO_EDITOR} PUBLIC ${PROJECT_SOURCE_DIR}/deps)
-target_include_directories(${KONTO_EDITOR} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${KONTO_EDITOR} PUBLIC deps)
+target_include_directories(${KONTO_EDITOR} PUBLIC include)
 
 set(KONTOMIRE_BUILD_TEST
     OFF
@@ -83,15 +91,31 @@ set(KONTOMIRE_BUILD_TEST
 set(KONTOMIRE_BUILD_PLAYGROUND
     OFF
     CACHE BOOL "" FORCE)
+set(FLATBUFFERS_INSTALL
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLATBUFFERS_BUILD_TESTS
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLATBUFFERS_BUILD_FLATC
+    OFF
+    CACHE BOOL "" FORCE)
+set(FLATBUFFERS_BUILD_FLATHASH
+    OFF
+    CACHE BOOL "" FORCE)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/deps/entt)
-add_subdirectory(${PROJECT_SOURCE_DIR}/deps/glfw)
-add_subdirectory(${PROJECT_SOURCE_DIR}/deps/imgui)
-add_subdirectory(${PROJECT_SOURCE_DIR}/deps/kontomire)
+add_subdirectory(deps/entt)
+add_subdirectory(deps/glfw)
+add_subdirectory(deps/imgui)
+add_subdirectory(deps/kontomire)
+add_subdirectory(deps/flatbuffers)
+add_subdirectory(deps/nativefiledialog)
 
 target_link_libraries(${KONTO_BEANS} kontomire)
 target_link_libraries(${KONTO_BEANS} EnTT::EnTT)
+target_link_libraries(${KONTO_BEANS} flatbuffers)
 
+target_link_libraries(${KONTO_EDITOR} nfd)
 target_link_libraries(${KONTO_EDITOR} glfw)
 target_link_libraries(${KONTO_EDITOR} imgui)
 target_link_libraries(${KONTO_EDITOR} ${KONTO_BEANS})

@@ -26,47 +26,53 @@ void SceneCamera::set_projection_type(ProjectionType type)
     recalculate();
 }
 
-float SceneCamera::far_clip() const
+float SceneCamera::perspective_far() const
 {
-    return (projection_type_ == ProjectionType::ORTHOGRAPHIC) ? orthographic_far_ : perspective_far_;
+    return perspective_far_;
 }
 
-float SceneCamera::near_clip() const
+float SceneCamera::perspective_near() const
 {
-    return (projection_type_ == ProjectionType::ORTHOGRAPHIC) ? orthographic_near_ : perspective_near_;
+    return perspective_near_;
 }
 
-void SceneCamera::set_far_clip(float clip)
+void SceneCamera::set_perspective_far(float far)
 {
-    if (projection_type_ == ProjectionType::ORTHOGRAPHIC)
-    {
-        orthographic_far_ = clip;
-    }
-    else
-    {
-        perspective_far_ = clip;
-    }
-
+    perspective_far_ = far;
     recalculate();
 }
 
-void SceneCamera::set_near_clip(float clip)
+void SceneCamera::set_perspective_near(float near)
 {
-    if (projection_type_ == ProjectionType::ORTHOGRAPHIC)
-    {
-        orthographic_near_ = clip;
-    }
-    else
-    {
-        perspective_near_ = clip;
-    }
-
+    perspective_near_ = near;
     recalculate();
 }
 
-float SceneCamera::perspective_FOV() const
+float SceneCamera::orthographic_far() const
 {
-    return perspective_FOV_;
+    return orthographic_far_;
+}
+
+float SceneCamera::orthographic_near() const
+{
+    return orthographic_near_;
+}
+
+void SceneCamera::set_orthographic_far(float far)
+{
+    orthographic_far_ = far;
+    recalculate();
+}
+
+void SceneCamera::set_orthographic_near(float near)
+{
+    orthographic_near_ = near;
+    recalculate();
+}
+
+float SceneCamera::perspective_fov() const
+{
+    return perspective_fov_;
 }
 
 float SceneCamera::orthographic_size() const
@@ -74,9 +80,9 @@ float SceneCamera::orthographic_size() const
     return orthographic_size_;
 }
 
-void SceneCamera::set_perspective_FOV(float FOV)
+void SceneCamera::set_perspective_fov(float FOV)
 {
-    perspective_FOV_ = FOV;
+    perspective_fov_ = FOV;
     recalculate();
 }
 
@@ -109,7 +115,7 @@ void SceneCamera::recalculate()
 {
     if (projection_type_ == ProjectionType::PERSPECTIVE)
     {
-        projection_ = glm::perspective(perspective_FOV_, aspect_ratio_, perspective_near_, perspective_far_);
+        projection_ = glm::perspective(perspective_fov_, aspect_ratio_, perspective_near_, perspective_far_);
     }
     else
     {

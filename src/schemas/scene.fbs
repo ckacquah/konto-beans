@@ -1,0 +1,18 @@
+include "components.fbs";
+
+namespace Konto.Serializable;
+
+table Entity
+{
+    id:uint64;
+    name:string;
+    components:[Component];
+}
+
+table Scene
+{
+    name:string;
+    entities:[Entity];
+}
+
+root_type Scene;

@@ -127,6 +127,16 @@ template <> void InspectorPanel::render<TransformComponent>(TransformComponent& 
 
 template <> void InspectorPanel::render<CameraComponent>(CameraComponent& component)
 {
+    static float perspective_far{component.camera.perspective_far()};
+    static float perspective_near{component.camera.perspective_near()};
+    static float perspective_fov{component.camera.perspective_fov()};
+
+    static float orthographic_far{component.camera.orthographic_far()};
+    static float orthographic_near{component.camera.orthographic_near()};
+    static float orthographic_size{component.camera.orthographic_size()};
+
+    static float aspect_ratio{component.camera.aspect_ratio()};
+
     if (ImGui::BeginCombo("Projection", component.camera.is_orthographic() ? "Orthographic" : "Perspective"))
     {
         if (ImGui::Selectable("Orthographic", component.camera.is_orthographic()))
@@ -140,30 +150,35 @@ template <> void InspectorPanel::render<CameraComponent>(CameraComponent& compon
         ImGui::EndCombo();
     }
 
-    static float far{component.camera.far_clip()};
-    static float near{component.camera.near_clip()};
-    static float aspect_ratio{component.camera.aspect_ratio()};
-    static float perspective_FOV{component.camera.perspective_FOV()};
-    static float orthographic_size{component.camera.orthographic_size()};
-
-    if (ImGui::DragFloat("Near", &near, 0.05, 0.0f, 0.0f, "%.2f"))
+    if (component.camera.is_perspective())
     {
-        component.camera.set_near_clip(near);
+        if (ImGui::DragFloat("Far", &perspective_far, 0.05, 0.0f, 0.0f, "%.2f"))
+        {
+            component.camera.set_perspective_far(perspective_far);
+        }
+        if (ImGui::DragFloat("Near", &perspective_near, 0.05, 0.0f, 0.0f, "%.2f"))
+        {
+            component.camera.set_perspective_near(perspective_near);
+        }
+        if (ImGui::DragFloat("Field Of View", &perspective_fov, 0.5f, 0.0f, 0.0f, "%.1f"))
+        {
+            component.camera.set_perspective_fov(perspective_fov);
+        }
     }
-    if (ImGui::DragFloat("Far", &far, 0.05, 0.0f, 0.0f, "%.2f"))
+    else
     {
-        component.camera.set_far_clip(far);
-    }
-
-    if (component.camera.is_perspective() &&
-        ImGui::DragFloat("Field Of View", &perspective_FOV, 0.5f, 0.0f, 0.0f, "%.1f"))
-    {
-        component.camera.set_perspective_FOV(near);
-    }
-    else if (component.camera.is_perspective() &&
-             ImGui::DragFloat("Orthographic Size", &orthographic_size, 0.5f, 0.0f, 0.0f, "%.1f"))
-    {
-        component.camera.set_orthographic_size(orthographic_size);
+        if (ImGui::DragFloat("Far", &orthographic_far, 0.05, 0.0f, 0.0f, "%.2f"))
+        {
+            component.camera.set_orthographic_far(orthographic_far);
+        }
+        if (ImGui::DragFloat("Near", &orthographic_near, 0.05, 0.0f, 0.0f, "%.2f"))
+        {
+            component.camera.set_orthographic_near(orthographic_near);
+        }
+        if (ImGui::DragFloat("Orthographic Size", &orthographic_size, 0.5f, 0.0f, 0.0f, "%.1f"))
+        {
+            component.camera.set_orthographic_size(orthographic_size);
+        }
     }
 
     if (ImGui::Checkbox("Fixed Aspect Ratio", &component.camera.fixed_aspect_ratio))
