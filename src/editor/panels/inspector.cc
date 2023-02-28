@@ -9,16 +9,16 @@ static const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTr
                                         ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
                                         ImGuiTreeNodeFlags_FramePadding;
 
-void InspectorPanel::init(const Entity& entity)
+void InspectorPanel::init(const std::shared_ptr<EditorContext>& editor)
 {
-    context_.entity = entity;
+    context_.editor = editor;
 }
 
 void InspectorPanel::render()
 {
     ImGui::Begin("Inspector");
     {
-        if (context_.entity)
+        if (context_.editor->active_entity)
         {
             render<TagComponent>("Tag", false);
             render<TransformComponent>("Transform", false);
@@ -51,9 +51,9 @@ void InspectorPanel::render_add_component()
 
 template <typename T> void InspectorPanel::render_add_menu_item(const std::string& name)
 {
-    if (!context_.entity.has<T>() && ImGui::MenuItem(name.c_str()))
+    if (!context_.editor->active_entity.has<T>() && ImGui::MenuItem(name.c_str()))
     {
-        context_.entity.add<T>();
+        context_.editor->active_entity.add<T>();
     }
 }
 
@@ -73,7 +73,7 @@ template <typename T> void InspectorPanel::render_settings(const std::string& ti
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
         {
-            context_.entity.remove<T>();
+            context_.editor->active_entity.remove<T>();
             ImGui::CloseCurrentPopup();
         }
 
@@ -90,9 +90,9 @@ template <typename T> void InspectorPanel::render_settings(const std::string& ti
 
 template <typename T> void InspectorPanel::render(const std::string& title, bool toggle)
 {
-    if (context_.entity.has<T>() && ImGui::TreeNodeEx(title.c_str(), flags))
+    if (context_.editor->active_entity.has<T>() && ImGui::TreeNodeEx(title.c_str(), flags))
     {
-        auto& component = context_.entity.get<T>();
+        auto& component = context_.editor->active_entity.get<T>();
         render<T>(component);
         if (toggle)
         {
@@ -114,7 +114,7 @@ template <> void InspectorPanel::render<TagComponent>(TagComponent& component)
 
 template <> void InspectorPanel::render<TransformComponent>(TransformComponent& component)
 {
-    ImGui::DragFloat3("Scale", glm::value_ptr(component.scale), 0.1f, 0.0f, 5.0f, "%.2f");
+    ImGui::DragFloat3("Scale", glm::value_ptr(component.scale), 0.1f, 0.0f, 0.0f, "%.2f");
 
     glm::vec3 rotation = glm::degrees(component.rotation);
     if (ImGui::DragFloat3("Rotation", glm::value_ptr(rotation), 1.0f, -180.0f, 180.0f, "%.2f"))

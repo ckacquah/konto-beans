@@ -16,36 +16,28 @@ int main()
 {
     Window::start("Konto Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    std::string scene_path = FileDialog::open("", {{"Konto Scene File", "konto"}});
+    auto context = std::make_shared<EditorContext>();
+    context->width = WINDOW_WIDTH;
+    context->height = WINDOW_HEIGHT;
+    context->scene = std::make_shared<Scene>();
 
-    if (!scene_path.empty())
+    MainMenu::init(context);
+    ScenePanel::init(context);
+    ViewportPanel::init(context);
+    InspectorPanel::init(context);
+    SimulationPanel::init(context);
+
+    while (!Window::is_closed())
     {
-        std::ifstream example_file;
-        example_file.open(scene_path, std::ios::binary | std::ios::in);
-        example_file.seekg(0, std::ios::end);
-        int length = example_file.tellg();
-        example_file.seekg(0, std::ios::beg);
-        char* data = new char[length];
-        example_file.read(data, length);
-        example_file.close();
+        Window::begin();
 
-        auto scene = SceneSerializer::deserialize((uint8_t*)data, length);
+        MainMenu::render();
+        ScenePanel::render();
+        ViewportPanel::render();
+        InspectorPanel::render();
+        SimulationPanel::render();
 
-        ScenePanel::init(scene);
-        ViewportPanel::init(scene, WINDOW_WIDTH, WINDOW_HEIGHT);
-        SimulationPanel::init(scene, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        while (!Window::is_closed())
-        {
-            Window::begin();
-
-            MainMenu::render();
-            ScenePanel::render();
-            ViewportPanel::render();
-            SimulationPanel::render();
-
-            Window::end();
-        }
+        Window::end();
     }
 
     Window::destroy();

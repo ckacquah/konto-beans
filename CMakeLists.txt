@@ -66,6 +66,7 @@ add_executable(
     ${KONTO_EDITOR}
     src/editor/editor.h
     src/editor/editor.cc
+    src/editor/context.h
     src/editor/window.h
     src/editor/window.cc
     src/editor/menus/main.h
@@ -82,6 +83,7 @@ add_executable(
     src/editor/panels/simulation.cc
 )
 
+target_include_directories(${KONTO_EDITOR} PUBLIC src)
 target_include_directories(${KONTO_EDITOR} PUBLIC deps)
 target_include_directories(${KONTO_EDITOR} PUBLIC include)
 
