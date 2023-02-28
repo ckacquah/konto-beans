@@ -5,6 +5,7 @@
 
 #include <imgui/imgui.h>
 
+#include "editor/context.h"
 #include "konto.h"
 
 namespace Konto::Editor
@@ -13,7 +14,7 @@ namespace Konto::Editor
 struct ViewportPanelContext
 {
     SceneCamera camera{};
-    std::shared_ptr<Scene> scene{};
+    std::shared_ptr<EditorContext> editor{};
 
     glm::vec3 camera_scale{1.0f};
     glm::vec3 camera_rotation{0.0f};
@@ -43,7 +44,7 @@ class ViewportPanel
   public:
     static void render();
     static void resize(uint32_t width, uint32_t height);
-    static void init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t height);
+    static void init(const std::shared_ptr<EditorContext>& editor);
 
     static ViewportPanelContext& viewport_data()
     {

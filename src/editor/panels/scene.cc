@@ -2,7 +2,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "inspector.h"
 #include "scene.h"
 
 namespace Konto::Editor
@@ -13,13 +12,12 @@ ScenePanelContext ScenePanel::context_{};
 void ScenePanel::render()
 {
     ScenePanel::render_entities();
-    InspectorPanel::render();
 }
 
-void ScenePanel::init(const std::shared_ptr<Scene>& scene)
+void ScenePanel::init(const std::shared_ptr<EditorContext>& editor)
 {
-    context_.scene = scene;
-    context_.selected_entity = Entity();
+    context_.editor = editor;
+    context_.editor->active_entity = Entity();
 }
 
 void ScenePanel::render_entities()
@@ -30,7 +28,7 @@ void ScenePanel::render_entities()
         {
             if (ImGui::MenuItem("New Entity"))
             {
-                context_.scene->create("");
+                context_.editor->scene->create("");
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Save Scene"))
@@ -41,7 +39,7 @@ void ScenePanel::render_entities()
             }
             ImGui::EndPopup();
         }
-        context_.scene->foreach ([&](Entity entity) {
+        context_.editor->scene->foreach ([&](Entity entity) {
             if (entity)
             {
                 ScenePanel::render_entity(entity);
@@ -60,8 +58,7 @@ void ScenePanel::render_entity(Entity entity)
     {
         if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
         {
-            context_.selected_entity = entity;
-            InspectorPanel::init(entity);
+            context_.editor->active_entity = entity;
         }
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
         {
@@ -73,15 +70,13 @@ void ScenePanel::render_entity(Entity entity)
     {
         if (ImGui::MenuItem("Delete"))
         {
-            context_.scene->destroy(entity);
-            context_.selected_entity = Entity();
-            InspectorPanel::init(Entity());
+            context_.editor->scene->destroy(entity);
+            context_.editor->active_entity = Entity();
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Edit"))
         {
-            context_.selected_entity = entity;
-            InspectorPanel::init(entity);
+            context_.editor->active_entity = entity;
         }
         if (ImGui::MenuItem("Duplicate"))
         {

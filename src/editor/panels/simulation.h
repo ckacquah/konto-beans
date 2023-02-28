@@ -5,6 +5,7 @@
 
 #include <imgui/imgui.h>
 
+#include "editor/context.h"
 #include "konto.h"
 
 namespace Konto::Editor
@@ -13,7 +14,7 @@ namespace Konto::Editor
 struct SimulationPanelContext
 {
     std::shared_ptr<Scene> scene{};
-    std::shared_ptr<Scene> scene_active{};
+    std::shared_ptr<EditorContext> editor{};
     std::shared_ptr<Knt::FrameBuffer> framebuffer{};
 
     SimulationPanelContext() = default;
@@ -31,7 +32,7 @@ class SimulationPanel
     static void pause();
     static void update();
     static void render();
-    static void init(const std::shared_ptr<Scene>& scene, uint32_t width, uint32_t height);
+    static void init(const std::shared_ptr<EditorContext>& editor);
 };
 
 } // namespace Konto::Editor

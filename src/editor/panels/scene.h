@@ -5,6 +5,7 @@
 
 #include <imgui/imgui.h>
 
+#include "editor/context.h"
 #include "konto.h"
 
 namespace Konto::Editor
@@ -12,8 +13,7 @@ namespace Konto::Editor
 
 struct ScenePanelContext
 {
-    Entity selected_entity{};
-    std::shared_ptr<Scene> scene{};
+    std::shared_ptr<EditorContext> editor{};
 
     ScenePanelContext() = default;
     ScenePanelContext(const ScenePanelContext& other) = default;
@@ -29,7 +29,7 @@ class ScenePanel
 
   public:
     static void render();
-    static void init(const std::shared_ptr<Scene>& scene);
+    static void init(const std::shared_ptr<EditorContext>& editor_context);
 };
 
 } // namespace Konto::Editor

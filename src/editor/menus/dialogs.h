@@ -8,10 +8,11 @@
 namespace Konto::Editor
 {
 
-class FileDialog
+struct FileDialog
 {
-  public:
     static std::string open(const std::string& folderpath,
+                            const std::vector<std::tuple<std::string, std::string>>& filters);
+    static std::string save(const std::string& folderpath, const std::string& filename,
                             const std::vector<std::tuple<std::string, std::string>>& filters);
 };
 

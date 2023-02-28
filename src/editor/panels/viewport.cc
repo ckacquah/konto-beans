@@ -17,21 +17,21 @@ void ViewportPanel::render()
     Knt::Renderer::set_clear_color(context_.clear_color);
     Knt::Renderer::clear();
 
-    context_.scene->render(context_.camera.projection(), context_.camera_transform());
+    context_.editor->scene->render(context_.camera.projection(), context_.camera_transform());
     context_.framebuffer->clear_attachment(1, -1);
     context_.framebuffer->unbind();
 
     ViewportPanel::render_viewport();
 }
 
-void ViewportPanel::init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t height)
+void ViewportPanel::init(const std::shared_ptr<EditorContext>& editor)
 {
-    context_.scene = scene;
-    resize(width, height);
+    context_.editor = editor;
+    resize(editor->width, editor->height);
 
     Knt::FramebufferSpecification framebuffer_specs{};
-    framebuffer_specs.width = width;
-    framebuffer_specs.height = height;
+    framebuffer_specs.width = editor->width;
+    framebuffer_specs.height = editor->height;
     framebuffer_specs.attachments = {Knt::FramebufferTextureFormat::DEPTH, Knt::FramebufferTextureFormat::RGBA8,
                                      Knt::FramebufferTextureFormat::RED_INTEGER};
 
@@ -48,7 +48,7 @@ void ViewportPanel::init(std::shared_ptr<Scene> scene, uint32_t width, uint32_t 
 
 void ViewportPanel::resize(uint32_t width, uint32_t height)
 {
-    context_.scene->resize(width, height);
+    context_.editor->scene->resize(width, height);
     context_.camera.set_viewport_size(width, height);
 }
 

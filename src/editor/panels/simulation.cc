@@ -11,7 +11,7 @@ void SimulationPanel::stop()
 
 void SimulationPanel::play()
 {
-    context_.scene_active = context_.scene->clone();
+    context_.scene = context_.editor->scene->clone();
 }
 
 void SimulationPanel::pause()
@@ -25,7 +25,7 @@ void SimulationPanel::update()
     Knt::Renderer::set_clear_color(glm::vec4(1.0f));
     Knt::Renderer::clear();
 
-    context_.scene_active->update();
+    context_.scene->update();
     context_.framebuffer->clear_attachment(1, -1);
     context_.framebuffer->unbind();
 }
@@ -51,22 +51,22 @@ void SimulationPanel::render()
         {
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
-            context_.scene_active->resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
+            context_.scene->resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
         }
         ImGui::EndChild();
     }
     ImGui::End();
 }
 
-void SimulationPanel::init(const std::shared_ptr<Scene>& scene, uint32_t width, uint32_t height)
+void SimulationPanel::init(const std::shared_ptr<EditorContext>& editor)
 {
-    context_.scene = scene;
-    context_.scene_active = context_.scene->clone();
-    context_.scene_active->resize(width, height);
+    context_.editor = editor;
+    context_.scene = editor->scene->clone();
+    context_.scene->resize(editor->width, editor->height);
 
     Knt::FramebufferSpecification framebuffer_specs{};
-    framebuffer_specs.width = width;
-    framebuffer_specs.height = height;
+    framebuffer_specs.width = editor->width;
+    framebuffer_specs.height = editor->height;
     framebuffer_specs.attachments = {Knt::FramebufferTextureFormat::DEPTH, Knt::FramebufferTextureFormat::RGBA8,
                                      Knt::FramebufferTextureFormat::RED_INTEGER};
 
