@@ -45,17 +45,19 @@ struct Camera
     projection_type:ProjectionType;
 }
 
-struct SpriteRenderer
+table SpriteRenderer
 {
     enabled:bool;
+    texture_path:string;
 
     color:Color;
     tiling_factor:float;
 }
 
-struct CircleRenderer
+table CircleRenderer
 {
     enabled:bool;
+    texture_path:string;
 
     color:Color;
     fade:float;

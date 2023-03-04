@@ -1,4 +1,7 @@
 #include "inspector.h"
+#include "editor/menus/dialogs.h"
+
+#include <kontomire.h>
 
 namespace Konto::Editor
 {
@@ -195,6 +198,12 @@ template <> void InspectorPanel::render<SpriteRendererComponent>(SpriteRendererC
 {
     ImGui::DragFloat("Tiling Factor", &component.tiling_factor);
     ImGui::ColorEdit3("Color", glm::value_ptr(component.color));
+    ImGui::TextDisabled("%s", component.texture_path.c_str());
+    if (ImGui::Button("Select texture image"))
+    {
+        component.texture_path = FileDialog::open("", {{"Texture Images", "png,jpg,JPEG,PNG,jpg,jpeg"}});
+        component.texture = Knt::Texture2D::load(component.texture_path, "SquareTexture");
+    }
 }
 
 template <> void InspectorPanel::render<CircleRendererComponent>(CircleRendererComponent& component)
@@ -202,6 +211,12 @@ template <> void InspectorPanel::render<CircleRendererComponent>(CircleRendererC
     ImGui::DragFloat("Fade", &component.fade, 0.005f, 0.0f, 0.0f, "%.5f");
     ImGui::DragFloat("Thickness", &component.thickness, 0.1f, 0.0f, 0.0f, "%.2f");
     ImGui::ColorEdit3("Color", glm::value_ptr(component.color));
+    ImGui::TextDisabled("%s", component.texture_path.c_str());
+    if (ImGui::Button("Select texture image"))
+    {
+        component.texture_path = FileDialog::open("", {{"Texture Images", "png,jpg,JPEG,PNG,jpg,jpeg"}});
+        component.texture = Knt::Texture2D::load(component.texture_path, "CircleTexture");
+    }
 }
 
 } // namespace Konto::Editor

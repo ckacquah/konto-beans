@@ -20,13 +20,18 @@ namespace Konto
 class SceneSerializer
 {
   private:
-    static flatbuffers::Offset<Serializable::Scene> convert(flatbuffers::FlatBufferBuilder& fbb, Scene& scene);
-    static flatbuffers::Offset<Serializable::Entity> convert(flatbuffers::FlatBufferBuilder& fbb, Entity& entity);
+    static flatbuffers::Offset<Serializable::Scene> convert(flatbuffers::FlatBufferBuilder& buffer_builder,
+                                                            Scene& scene);
+    static flatbuffers::Offset<Serializable::Entity> convert(flatbuffers::FlatBufferBuilder& buffer_builder,
+                                                             Entity& entity);
 
     static Serializable::Camera convert(const CameraComponent& component);
     static Serializable::Transform convert(const TransformComponent& component);
-    static Serializable::SpriteRenderer convert(const SpriteRendererComponent& component);
-    static Serializable::CircleRenderer convert(const CircleRendererComponent& component);
+
+    static flatbuffers::Offset<Serializable::SpriteRenderer> convert(flatbuffers::FlatBufferBuilder& buffer_builder,
+                                                                     const SpriteRendererComponent& component);
+    static flatbuffers::Offset<Serializable::CircleRenderer> convert(flatbuffers::FlatBufferBuilder& buffer_builder,
+                                                                     const CircleRendererComponent& component);
 
     static Scene convert(const Serializable::Scene& scene);
     static Entity convert(const Serializable::Entity& entity, Scene& scene);

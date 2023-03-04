@@ -39,15 +39,15 @@ flatbuffers::Offset<Serializable::Entity> SceneSerializer::convert(flatbuffers::
     }
     if (entity.has<SpriteRendererComponent>())
     {
-        auto component = convert(entity.get<SpriteRendererComponent>());
+        auto component = convert(buffer_builder, entity.get<SpriteRendererComponent>());
         components_type.push_back(Serializable::Component_SpriteRenderer);
-        components.push_back(buffer_builder.CreateStruct(component).Union());
+        components.push_back(component.Union());
     }
     if (entity.has<CircleRendererComponent>())
     {
-        auto component = convert(entity.get<CircleRendererComponent>());
+        auto component = convert(buffer_builder, entity.get<CircleRendererComponent>());
         components_type.push_back(Serializable::Component_CircleRenderer);
-        components.push_back(buffer_builder.CreateStruct(component).Union());
+        components.push_back(component.Union());
     }
     return Serializable::CreateEntityDirect(buffer_builder, id, tag, &components_type, &components);
 }
