@@ -1,5 +1,6 @@
-#include "inspector.h"
+#include "editor/panels/inspector.h"
 #include "editor/menus/dialogs.h"
+#include "konto.h"
 
 #include <kontomire.h>
 
@@ -28,6 +29,9 @@ void InspectorPanel::render()
             render<CameraComponent>("Camera");
             render<SpriteRendererComponent>("Sprite Renderer");
             render<CircleRendererComponent>("Circle Renderer");
+            render<RigidBody2DComponent>("Rigid Body 2D");
+            render<BoxCollider2DComponent>("Box Collider 2D");
+            render<CircleCollider2DComponent>("Circle Collider 2D");
 
             render_add_component();
         }
@@ -48,6 +52,9 @@ void InspectorPanel::render_add_component()
         render_add_menu_item<CameraComponent>("Camera");
         render_add_menu_item<SpriteRendererComponent>("Sprite Renderer");
         render_add_menu_item<CircleRendererComponent>("Circle Renderer");
+        render_add_menu_item<RigidBody2DComponent>("Rigid Body 2D");
+        render_add_menu_item<BoxCollider2DComponent>("Box Collider 2D");
+        render_add_menu_item<CircleCollider2DComponent>("Circle Collider 2D");
         ImGui::EndPopup();
     }
 }
@@ -96,7 +103,7 @@ template <typename T> void InspectorPanel::render(const std::string& title, bool
     if (context_.editor->active_entity.has<T>() && ImGui::TreeNodeEx(title.c_str(), flags))
     {
         auto& component = context_.editor->active_entity.get<T>();
-        render<T>(component);
+        render(component);
         if (toggle)
         {
             render_settings(title, component);
@@ -105,7 +112,7 @@ template <typename T> void InspectorPanel::render(const std::string& title, bool
     }
 }
 
-template <> void InspectorPanel::render<TagComponent>(TagComponent& component)
+void InspectorPanel::render(TagComponent& component)
 {
     char name[25]{};
     memcpy(name, component.tag.c_str(), 24);
@@ -115,7 +122,49 @@ template <> void InspectorPanel::render<TagComponent>(TagComponent& component)
     }
 }
 
-template <> void InspectorPanel::render<TransformComponent>(TransformComponent& component)
+const char* body_types_name[] = {"Static", "Kinematic", "Dynamic"};
+
+void InspectorPanel::render(RigidBody2DComponent& component)
+{
+    if (ImGui::BeginCombo("Body Type", body_types_name[component.definition.type]))
+    {
+        if (ImGui::Selectable("Static", component.definition.type == b2_staticBody))
+        {
+            component.definition.type = b2_staticBody;
+        }
+        if (ImGui::Selectable("Kinematic", component.definition.type == b2_kinematicBody))
+        {
+            component.definition.type = b2_kinematicBody;
+        }
+        if (ImGui::Selectable("Dynamic", component.definition.type == b2_dynamicBody))
+        {
+            component.definition.type = b2_dynamicBody;
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::DragFloat("Angle", &component.definition.angle, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("Gravity Scale", &component.definition.gravityScale, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("Linear Damping", &component.definition.linearDamping, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("Anglular Damping", &component.definition.angularDamping, 0.1f, 0.0f, 0.0f, "%.2f");
+}
+
+void InspectorPanel::render(BoxCollider2DComponent& component)
+{
+    ImGui::DragFloat2("Size", glm::value_ptr(component.size), 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("Density", &component.fixture.density, 0.05f, 0.0f, 1.0f, "%.2f");
+    ImGui::DragFloat("Friction", &component.fixture.friction, 0.05f, 0.0f, 1.0f, "%.2f");
+    ImGui::DragFloat("Restitution", &component.fixture.restitution, 0.05f, 0.0f, 1.0f, "%.2f");
+}
+
+void InspectorPanel::render(CircleCollider2DComponent& component)
+{
+    ImGui::DragFloat("Raduis", &component.radius, 0.1f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("Density", &component.fixture.density, 0.05f, 0.0f, 1.0f, "%.2f");
+    ImGui::DragFloat("Friction", &component.fixture.friction, 0.05f, 0.0f, 1.0f, "%.2f");
+    ImGui::DragFloat("Restitution", &component.fixture.restitution, 0.05f, 0.0f, 1.0f, "%.2f");
+}
+
+void InspectorPanel::render(TransformComponent& component)
 {
     ImGui::DragFloat3("Scale", glm::value_ptr(component.scale), 0.1f, 0.0f, 0.0f, "%.2f");
 
@@ -128,7 +177,7 @@ template <> void InspectorPanel::render<TransformComponent>(TransformComponent& 
     ImGui::DragFloat3("Translation", glm::value_ptr(component.translation), 0.05f, 0.0f, 0.0f, "%.2f");
 }
 
-template <> void InspectorPanel::render<CameraComponent>(CameraComponent& component)
+void InspectorPanel::render(CameraComponent& component)
 {
     static float perspective_far{component.camera.perspective_far()};
     static float perspective_near{component.camera.perspective_near()};
@@ -194,7 +243,7 @@ template <> void InspectorPanel::render<CameraComponent>(CameraComponent& compon
     }
 }
 
-template <> void InspectorPanel::render<SpriteRendererComponent>(SpriteRendererComponent& component)
+void InspectorPanel::render(SpriteRendererComponent& component)
 {
     ImGui::DragFloat("Tiling Factor", &component.tiling_factor);
     ImGui::ColorEdit3("Color", glm::value_ptr(component.color));
@@ -206,7 +255,7 @@ template <> void InspectorPanel::render<SpriteRendererComponent>(SpriteRendererC
     }
 }
 
-template <> void InspectorPanel::render<CircleRendererComponent>(CircleRendererComponent& component)
+void InspectorPanel::render(CircleRendererComponent& component)
 {
     ImGui::DragFloat("Fade", &component.fade, 0.005f, 0.0f, 0.0f, "%.5f");
     ImGui::DragFloat("Thickness", &component.thickness, 0.1f, 0.0f, 0.0f, "%.2f");

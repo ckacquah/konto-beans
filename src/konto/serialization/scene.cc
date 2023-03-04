@@ -49,6 +49,24 @@ flatbuffers::Offset<Serializable::Entity> SceneSerializer::convert(flatbuffers::
         components_type.push_back(Serializable::Component_CircleRenderer);
         components.push_back(component.Union());
     }
+    if (entity.has<RigidBody2DComponent>())
+    {
+        auto component = convert(entity.get<RigidBody2DComponent>());
+        components_type.push_back(Serializable::Component_RigidBody2D);
+        components.push_back(buffer_builder.CreateStruct(component).Union());
+    }
+    if (entity.has<BoxCollider2DComponent>())
+    {
+        auto component = convert(entity.get<BoxCollider2DComponent>());
+        components_type.push_back(Serializable::Component_BoxCollider2D);
+        components.push_back(buffer_builder.CreateStruct(component).Union());
+    }
+    if (entity.has<CircleCollider2DComponent>())
+    {
+        auto component = convert(entity.get<CircleCollider2DComponent>());
+        components_type.push_back(Serializable::Component_CircleCollider2D);
+        components.push_back(buffer_builder.CreateStruct(component).Union());
+    }
     return Serializable::CreateEntityDirect(buffer_builder, id, tag, &components_type, &components);
 }
 
@@ -93,6 +111,24 @@ Entity SceneSerializer::convert(const Serializable::Entity& entity, Scene& scene
             auto circle = static_cast<const Serializable::CircleRenderer*>((*components)[i]);
             auto& component = _entity.add<CircleRendererComponent>();
             component = convert(*circle);
+            break;
+        }
+        case Serializable::Component_RigidBody2D: {
+            auto rigid_body = static_cast<const Serializable::RigidBody2D*>((*components)[i]);
+            auto& component = _entity.add<RigidBody2DComponent>();
+            component = convert(*rigid_body);
+            break;
+        }
+        case Serializable::Component_BoxCollider2D: {
+            auto box_collider = static_cast<const Serializable::BoxCollider2D*>((*components)[i]);
+            auto& component = _entity.add<BoxCollider2DComponent>();
+            component = convert(*box_collider);
+            break;
+        }
+        case Serializable::Component_CircleCollider2D: {
+            auto circle_collider = static_cast<const Serializable::CircleCollider2D*>((*components)[i]);
+            auto& component = _entity.add<CircleCollider2DComponent>();
+            component = convert(*circle_collider);
             break;
         }
         default:

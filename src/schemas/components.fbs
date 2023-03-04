@@ -1,5 +1,10 @@
 namespace Konto.Serializable;
 
+struct Vec2 {
+  x:float;
+  y:float;
+}
+
 struct Vec3 {
   x:float;
   y:float;
@@ -13,18 +18,16 @@ struct Color {
   a:float;
 }
 
-union Component { Transform, Camera, SpriteRenderer, CircleRenderer }
-
 struct Transform
 {
     enabled:bool;
 
     scale:Vec3;
     rotation:Vec3;
-    translation:Vec3 ;
+    translation:Vec3;
 }
 
-enum ProjectionType : int { PERSPECTIVE = 0, ORTHOGRAPHIC }
+enum ProjectionType: int { PERSPECTIVE = 0, ORTHOGRAPHIC }
 
 struct Camera
 {
@@ -63,3 +66,35 @@ table CircleRenderer
     fade:float;
     thickness:float;
 }
+
+enum RigidBody2DType: int { STATIC = 0, KINEMATIC, DYNAMIC }
+
+struct RigidBody2D 
+{
+    rigid_body_type:RigidBody2DType;
+
+    angle:float;
+    gravity_scale:float;
+    linear_damping:float;
+    angular_damping:float;
+}
+
+struct BoxCollider2D
+{
+    size:Vec2;
+    
+    density:float;
+    friction:float;
+    restitution:float;
+}
+
+struct CircleCollider2D
+{
+    radius:float;
+    density:float;
+    friction:float;
+    restitution:float;
+}
+
+union Component { Transform, Camera, SpriteRenderer, CircleRenderer, RigidBody2D, BoxCollider2D, CircleCollider2D }
+

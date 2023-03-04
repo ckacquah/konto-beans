@@ -15,6 +15,8 @@ namespace Konto
 namespace Serializable
 {
 
+struct Vec2;
+
 struct Vec3;
 
 struct Color;
@@ -29,6 +31,70 @@ struct SpriteRendererBuilder;
 struct CircleRenderer;
 struct CircleRendererBuilder;
 
+struct RigidBody2D;
+
+struct BoxCollider2D;
+
+struct CircleCollider2D;
+
+enum ProjectionType : int32_t
+{
+    ProjectionType_PERSPECTIVE = 0,
+    ProjectionType_ORTHOGRAPHIC = 1,
+    ProjectionType_MIN = ProjectionType_PERSPECTIVE,
+    ProjectionType_MAX = ProjectionType_ORTHOGRAPHIC
+};
+
+inline const ProjectionType (&EnumValuesProjectionType())[2]
+{
+    static const ProjectionType values[] = {ProjectionType_PERSPECTIVE, ProjectionType_ORTHOGRAPHIC};
+    return values;
+}
+
+inline const char* const* EnumNamesProjectionType()
+{
+    static const char* const names[3] = {"PERSPECTIVE", "ORTHOGRAPHIC", nullptr};
+    return names;
+}
+
+inline const char* EnumNameProjectionType(ProjectionType e)
+{
+    if (::flatbuffers::IsOutRange(e, ProjectionType_PERSPECTIVE, ProjectionType_ORTHOGRAPHIC))
+        return "";
+    const size_t index = static_cast<size_t>(e);
+    return EnumNamesProjectionType()[index];
+}
+
+enum RigidBody2DType : int32_t
+{
+    RigidBody2DType_STATIC = 0,
+    RigidBody2DType_KINEMATIC = 1,
+    RigidBody2DType_DYNAMIC = 2,
+    RigidBody2DType_MIN = RigidBody2DType_STATIC,
+    RigidBody2DType_MAX = RigidBody2DType_DYNAMIC
+};
+
+inline const RigidBody2DType (&EnumValuesRigidBody2DType())[3]
+{
+    static const RigidBody2DType values[] = {RigidBody2DType_STATIC, RigidBody2DType_KINEMATIC,
+                                             RigidBody2DType_DYNAMIC};
+    return values;
+}
+
+inline const char* const* EnumNamesRigidBody2DType()
+{
+    static const char* const names[4] = {"STATIC", "KINEMATIC", "DYNAMIC", nullptr};
+    return names;
+}
+
+inline const char* EnumNameRigidBody2DType(RigidBody2DType e)
+{
+    if (::flatbuffers::IsOutRange(e, RigidBody2DType_STATIC, RigidBody2DType_DYNAMIC))
+        return "";
+    const size_t index = static_cast<size_t>(e);
+    return EnumNamesRigidBody2DType()[index];
+}
+
 enum Component : uint8_t
 {
     Component_NONE = 0,
@@ -36,26 +102,32 @@ enum Component : uint8_t
     Component_Camera = 2,
     Component_SpriteRenderer = 3,
     Component_CircleRenderer = 4,
+    Component_RigidBody2D = 5,
+    Component_BoxCollider2D = 6,
+    Component_CircleCollider2D = 7,
     Component_MIN = Component_NONE,
-    Component_MAX = Component_CircleRenderer
+    Component_MAX = Component_CircleCollider2D
 };
 
-inline const Component (&EnumValuesComponent())[5]
+inline const Component (&EnumValuesComponent())[8]
 {
-    static const Component values[] = {Component_NONE, Component_Transform, Component_Camera, Component_SpriteRenderer,
-                                       Component_CircleRenderer};
+    static const Component values[] = {Component_NONE,           Component_Transform,       Component_Camera,
+                                       Component_SpriteRenderer, Component_CircleRenderer,  Component_RigidBody2D,
+                                       Component_BoxCollider2D,  Component_CircleCollider2D};
     return values;
 }
 
 inline const char* const* EnumNamesComponent()
 {
-    static const char* const names[6] = {"NONE", "Transform", "Camera", "SpriteRenderer", "CircleRenderer", nullptr};
+    static const char* const names[9] = {"NONE",           "Transform",        "Camera",
+                                         "SpriteRenderer", "CircleRenderer",   "RigidBody2D",
+                                         "BoxCollider2D",  "CircleCollider2D", nullptr};
     return names;
 }
 
 inline const char* EnumNameComponent(Component e)
 {
-    if (::flatbuffers::IsOutRange(e, Component_NONE, Component_CircleRenderer))
+    if (::flatbuffers::IsOutRange(e, Component_NONE, Component_CircleCollider2D))
         return "";
     const size_t index = static_cast<size_t>(e);
     return EnumNamesComponent()[index];
@@ -86,38 +158,49 @@ template <> struct ComponentTraits<Konto::Serializable::CircleRenderer>
     static const Component enum_value = Component_CircleRenderer;
 };
 
+template <> struct ComponentTraits<Konto::Serializable::RigidBody2D>
+{
+    static const Component enum_value = Component_RigidBody2D;
+};
+
+template <> struct ComponentTraits<Konto::Serializable::BoxCollider2D>
+{
+    static const Component enum_value = Component_BoxCollider2D;
+};
+
+template <> struct ComponentTraits<Konto::Serializable::CircleCollider2D>
+{
+    static const Component enum_value = Component_CircleCollider2D;
+};
+
 bool VerifyComponent(::flatbuffers::Verifier& verifier, const void* obj, Component type);
 bool VerifyComponentVector(::flatbuffers::Verifier& verifier,
                            const ::flatbuffers::Vector<::flatbuffers::Offset<void>>* values,
                            const ::flatbuffers::Vector<uint8_t>* types);
 
-enum ProjectionType : int32_t
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) Vec2 FLATBUFFERS_FINAL_CLASS
 {
-    ProjectionType_PERSPECTIVE = 0,
-    ProjectionType_ORTHOGRAPHIC = 1,
-    ProjectionType_MIN = ProjectionType_PERSPECTIVE,
-    ProjectionType_MAX = ProjectionType_ORTHOGRAPHIC
+  private:
+    float x_;
+    float y_;
+
+  public:
+    Vec2() : x_(0), y_(0)
+    {
+    }
+    Vec2(float _x, float _y) : x_(::flatbuffers::EndianScalar(_x)), y_(::flatbuffers::EndianScalar(_y))
+    {
+    }
+    float x() const
+    {
+        return ::flatbuffers::EndianScalar(x_);
+    }
+    float y() const
+    {
+        return ::flatbuffers::EndianScalar(y_);
+    }
 };
-
-inline const ProjectionType (&EnumValuesProjectionType())[2]
-{
-    static const ProjectionType values[] = {ProjectionType_PERSPECTIVE, ProjectionType_ORTHOGRAPHIC};
-    return values;
-}
-
-inline const char* const* EnumNamesProjectionType()
-{
-    static const char* const names[3] = {"PERSPECTIVE", "ORTHOGRAPHIC", nullptr};
-    return names;
-}
-
-inline const char* EnumNameProjectionType(ProjectionType e)
-{
-    if (::flatbuffers::IsOutRange(e, ProjectionType_PERSPECTIVE, ProjectionType_ORTHOGRAPHIC))
-        return "";
-    const size_t index = static_cast<size_t>(e);
-    return EnumNamesProjectionType()[index];
-}
+FLATBUFFERS_STRUCT_END(Vec2, 8);
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) Vec3 FLATBUFFERS_FINAL_CLASS
 {
@@ -315,6 +398,122 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) Camera FLATBUFFERS_FINAL_CLASS
     }
 };
 FLATBUFFERS_STRUCT_END(Camera, 36);
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) RigidBody2D FLATBUFFERS_FINAL_CLASS
+{
+  private:
+    int32_t rigid_body_type_;
+    float angle_;
+    float gravity_scale_;
+    float linear_damping_;
+    float angular_damping_;
+
+  public:
+    RigidBody2D() : rigid_body_type_(0), angle_(0), gravity_scale_(0), linear_damping_(0), angular_damping_(0)
+    {
+    }
+    RigidBody2D(Konto::Serializable::RigidBody2DType _rigid_body_type, float _angle, float _gravity_scale,
+                float _linear_damping, float _angular_damping)
+        : rigid_body_type_(::flatbuffers::EndianScalar(static_cast<int32_t>(_rigid_body_type))),
+          angle_(::flatbuffers::EndianScalar(_angle)), gravity_scale_(::flatbuffers::EndianScalar(_gravity_scale)),
+          linear_damping_(::flatbuffers::EndianScalar(_linear_damping)),
+          angular_damping_(::flatbuffers::EndianScalar(_angular_damping))
+    {
+    }
+    Konto::Serializable::RigidBody2DType rigid_body_type() const
+    {
+        return static_cast<Konto::Serializable::RigidBody2DType>(::flatbuffers::EndianScalar(rigid_body_type_));
+    }
+    float angle() const
+    {
+        return ::flatbuffers::EndianScalar(angle_);
+    }
+    float gravity_scale() const
+    {
+        return ::flatbuffers::EndianScalar(gravity_scale_);
+    }
+    float linear_damping() const
+    {
+        return ::flatbuffers::EndianScalar(linear_damping_);
+    }
+    float angular_damping() const
+    {
+        return ::flatbuffers::EndianScalar(angular_damping_);
+    }
+};
+FLATBUFFERS_STRUCT_END(RigidBody2D, 20);
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) BoxCollider2D FLATBUFFERS_FINAL_CLASS
+{
+  private:
+    Konto::Serializable::Vec2 size_;
+    float density_;
+    float friction_;
+    float restitution_;
+
+  public:
+    BoxCollider2D() : size_(), density_(0), friction_(0), restitution_(0)
+    {
+    }
+    BoxCollider2D(const Konto::Serializable::Vec2& _size, float _density, float _friction, float _restitution)
+        : size_(_size), density_(::flatbuffers::EndianScalar(_density)),
+          friction_(::flatbuffers::EndianScalar(_friction)), restitution_(::flatbuffers::EndianScalar(_restitution))
+    {
+    }
+    const Konto::Serializable::Vec2& size() const
+    {
+        return size_;
+    }
+    float density() const
+    {
+        return ::flatbuffers::EndianScalar(density_);
+    }
+    float friction() const
+    {
+        return ::flatbuffers::EndianScalar(friction_);
+    }
+    float restitution() const
+    {
+        return ::flatbuffers::EndianScalar(restitution_);
+    }
+};
+FLATBUFFERS_STRUCT_END(BoxCollider2D, 20);
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CircleCollider2D FLATBUFFERS_FINAL_CLASS
+{
+  private:
+    float radius_;
+    float density_;
+    float friction_;
+    float restitution_;
+
+  public:
+    CircleCollider2D() : radius_(0), density_(0), friction_(0), restitution_(0)
+    {
+    }
+    CircleCollider2D(float _radius, float _density, float _friction, float _restitution)
+        : radius_(::flatbuffers::EndianScalar(_radius)), density_(::flatbuffers::EndianScalar(_density)),
+          friction_(::flatbuffers::EndianScalar(_friction)), restitution_(::flatbuffers::EndianScalar(_restitution))
+    {
+    }
+    float radius() const
+    {
+        return ::flatbuffers::EndianScalar(radius_);
+    }
+    float density() const
+    {
+        return ::flatbuffers::EndianScalar(density_);
+    }
+    float friction() const
+    {
+        return ::flatbuffers::EndianScalar(friction_);
+    }
+    float restitution() const
+    {
+        return ::flatbuffers::EndianScalar(restitution_);
+    }
+};
+FLATBUFFERS_STRUCT_END(CircleCollider2D, 16);
 
 struct SpriteRenderer FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 {
@@ -525,6 +724,15 @@ inline bool VerifyComponent(::flatbuffers::Verifier& verifier, const void* obj, 
     case Component_CircleRenderer: {
         auto ptr = reinterpret_cast<const Konto::Serializable::CircleRenderer*>(obj);
         return verifier.VerifyTable(ptr);
+    }
+    case Component_RigidBody2D: {
+        return verifier.VerifyField<Konto::Serializable::RigidBody2D>(static_cast<const uint8_t*>(obj), 0, 4);
+    }
+    case Component_BoxCollider2D: {
+        return verifier.VerifyField<Konto::Serializable::BoxCollider2D>(static_cast<const uint8_t*>(obj), 0, 4);
+    }
+    case Component_CircleCollider2D: {
+        return verifier.VerifyField<Konto::Serializable::CircleCollider2D>(static_cast<const uint8_t*>(obj), 0, 4);
     }
     default:
         return true;

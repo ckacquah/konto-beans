@@ -50,6 +50,25 @@ flatbuffers::Offset<Serializable::CircleRenderer> SceneSerializer::convert(flatb
                                                     component.fade, component.thickness);
 }
 
+Serializable::RigidBody2D SceneSerializer::convert(const RigidBody2DComponent& component)
+{
+    return {static_cast<Serializable::RigidBody2DType>(component.definition.type), component.definition.angle,
+            component.definition.gravityScale, component.definition.linearDamping, component.definition.angularDamping};
+}
+
+Serializable::BoxCollider2D SceneSerializer::convert(const BoxCollider2DComponent& component)
+{
+    return {{component.size.x, component.size.y},
+            component.fixture.density,
+            component.fixture.friction,
+            component.fixture.restitution};
+}
+
+Serializable::CircleCollider2D SceneSerializer::convert(const CircleCollider2DComponent& component)
+{
+    return {component.radius, component.fixture.density, component.fixture.friction, component.fixture.restitution};
+}
+
 CameraComponent SceneSerializer::convert(const Serializable::Camera& component)
 {
     CameraComponent camera_component;
@@ -109,6 +128,38 @@ CircleRendererComponent SceneSerializer::convert(const Serializable::CircleRende
     circle_component.color = {component.color()->r(), component.color()->g(), component.color()->b(),
                               component.color()->a()};
     return circle_component;
+}
+
+RigidBody2DComponent SceneSerializer::convert(const Serializable::RigidBody2D& component)
+{
+    RigidBody2DComponent rigid_body_component;
+    rigid_body_component.enabled = true;
+    rigid_body_component.definition.type = static_cast<b2BodyType>(component.rigid_body_type());
+    rigid_body_component.definition.angle = component.angle();
+    rigid_body_component.definition.gravityScale = component.gravity_scale();
+    rigid_body_component.definition.linearDamping = component.linear_damping();
+    rigid_body_component.definition.angularDamping = component.angular_damping();
+    return rigid_body_component;
+}
+
+BoxCollider2DComponent SceneSerializer::convert(const Serializable::BoxCollider2D& component)
+{
+    BoxCollider2DComponent box_collider_component;
+    box_collider_component.size = {component.size().x(), component.size().y()};
+    box_collider_component.fixture.density = component.density();
+    box_collider_component.fixture.friction = component.friction();
+    box_collider_component.fixture.restitution = component.restitution();
+    return box_collider_component;
+}
+
+CircleCollider2DComponent SceneSerializer::convert(const Serializable::CircleCollider2D& component)
+{
+    CircleCollider2DComponent circle_collider_component;
+    circle_collider_component.radius = component.radius();
+    circle_collider_component.fixture.density = component.density();
+    circle_collider_component.fixture.friction = component.friction();
+    circle_collider_component.fixture.restitution = component.restitution();
+    return circle_collider_component;
 }
 
 } // namespace Konto
