@@ -12,6 +12,7 @@ void SimulationPanel::stop()
 void SimulationPanel::play()
 {
     context_.scene = context_.editor->scene->clone();
+    context_.scene->start();
 }
 
 void SimulationPanel::pause()
@@ -62,6 +63,7 @@ void SimulationPanel::init(const std::shared_ptr<EditorContext>& editor)
 {
     context_.editor = editor;
     context_.scene = editor->scene->clone();
+    context_.scene->start();
     context_.scene->resize(editor->width, editor->height);
 
     Knt::FramebufferSpecification framebuffer_specs{};

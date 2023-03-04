@@ -52,7 +52,9 @@ add_library(
     include/konto/core/scene.h
     include/konto/core/entity.h
     include/konto/core/camera.h
+    include/konto/core/timestep.h
     include/konto/components/common.h
+    include/konto/components/physics.h
     include/konto/components/renderer2d.h
     include/konto/serialization/scene.h
     include/konto/serialization/components.h
@@ -105,14 +107,22 @@ set(FLATBUFFERS_BUILD_FLATC
 set(FLATBUFFERS_BUILD_FLATHASH
     OFF
     CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_TESTBED
+    OFF
+    CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_UNIT_TESTS
+    OFF
+    CACHE BOOL "" FORCE)
 
 add_subdirectory(deps/entt)
 add_subdirectory(deps/glfw)
 add_subdirectory(deps/imgui)
+add_subdirectory(deps/box2d)
 add_subdirectory(deps/kontomire)
 add_subdirectory(deps/flatbuffers)
 add_subdirectory(deps/nativefiledialog)
 
+target_link_libraries(${KONTO_BEANS} box2d)
 target_link_libraries(${KONTO_BEANS} kontomire)
 target_link_libraries(${KONTO_BEANS} EnTT::EnTT)
 target_link_libraries(${KONTO_BEANS} flatbuffers)

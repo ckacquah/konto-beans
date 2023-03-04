@@ -28,15 +28,17 @@ class InspectorPanel
     static void render_add_component();
     template <typename T> static void render_add_menu_item(const std::string& name);
 
-    template <typename T> static void render(T& component);
     template <typename T> static void render(const std::string& title, bool toggle = true);
     template <typename T> static void render_settings(const std::string& title, T& component);
 
-    template <> void render<TagComponent>(TagComponent& component);
-    template <> void render<CameraComponent>(CameraComponent& component);
-    template <> void render<TransformComponent>(TransformComponent& component);
-    template <> void render<SpriteRendererComponent>(SpriteRendererComponent& component);
-    template <> void render<CircleRendererComponent>(CircleRendererComponent& component);
+    static void render(TagComponent& component);
+    static void render(CameraComponent& component);
+    static void render(TransformComponent& component);
+    static void render(SpriteRendererComponent& component);
+    static void render(CircleRendererComponent& component);
+    static void render(RigidBody2DComponent& component);
+    static void render(BoxCollider2DComponent& component);
+    static void render(CircleCollider2DComponent& component);
 
   public:
     static void render();

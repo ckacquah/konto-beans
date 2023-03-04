@@ -17,3 +17,6 @@
 [submodule "deps/nativefiledialog"]
 	path = deps/nativefiledialog
 	url = git@github.com:btzy/nativefiledialog-extended.git
+[submodule "deps/box2d"]
+	path = deps/box2d
+	url = git@github.com:erincatto/box2d.git

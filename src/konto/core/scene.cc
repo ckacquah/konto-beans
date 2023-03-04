@@ -1,8 +1,10 @@
 #include <memory>
 
+#include <box2d/box2d.h>
 #include <imgui/imgui.h>
 
 #include "konto/components/common.h"
+#include "konto/components/physics.h"
 #include "konto/components/renderer2d.h"
 #include "konto/core/entity.h"
 #include "konto/core/scene.h"
@@ -10,6 +12,58 @@
 
 namespace Konto
 {
+
+void Scene::start()
+{
+    world_ = new b2World(b2Vec2(0.0f, -10.0f));
+    {
+        auto view = registry_.view<TransformComponent, RigidBody2DComponent>();
+        for (auto entity : view)
+        {
+            auto [transform, rigid_body] = view.get<TransformComponent, RigidBody2DComponent>(entity);
+            rigid_body.definition.angle = transform.rotation.z;
+            rigid_body.definition.enabled = rigid_body.enabled;
+            rigid_body.definition.position.Set(transform.translation.x, transform.translation.y);
+            rigid_body.body = world_->CreateBody(&rigid_body.definition);
+        }
+    }
+    {
+        auto view = registry_.view<RigidBody2DComponent, BoxCollider2DComponent>();
+        for (auto entity : view)
+        {
+            auto& rigid_body = view.get<RigidBody2DComponent>(entity);
+            auto& box_collider = view.get<BoxCollider2DComponent>(entity);
+            box_collider.shape.SetAsBox(box_collider.size.x / 2, box_collider.size.y / 2);
+            box_collider.fixture.shape = &box_collider.shape;
+            rigid_body.body->CreateFixture(&box_collider.fixture);
+        }
+    }
+    {
+        auto view = registry_.view<RigidBody2DComponent, CircleCollider2DComponent>();
+        for (auto entity : view)
+        {
+            auto& rigid_body = view.get<RigidBody2DComponent>(entity);
+            auto& circle_collider = view.get<CircleCollider2DComponent>(entity);
+            circle_collider.shape.m_radius = circle_collider.radius;
+            circle_collider.fixture.shape = &circle_collider.shape;
+            rigid_body.body->CreateFixture(&circle_collider.fixture);
+        }
+    }
+}
+
+void Scene::step(float delta)
+{
+    world_->Step(1.0f / 60.0f, velocity_iterations_, position_iterations_);
+    auto view = registry_.view<TransformComponent, RigidBody2DComponent>();
+    for (auto entity : view)
+    {
+        auto& transform = view.get<TransformComponent>(entity);
+        auto& rigid_body = view.get<RigidBody2DComponent>(entity);
+        transform.rotation.z = rigid_body.body->GetAngle();
+        transform.translation.x = rigid_body.body->GetPosition().x;
+        transform.translation.y = rigid_body.body->GetPosition().y;
+    }
+}
 
 template <typename... Component>
 void Scene::copy(entt::registry& source, entt::registry& destination,
@@ -36,8 +90,8 @@ std::shared_ptr<Scene> Scene::clone()
         auto new_entity = scene->create(tag_component.tag, uuid_component.id);
     }
 
-    copy<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent>(
-        registry_, scene->registry_, scene->entities_);
+    copy<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, RigidBody2DComponent,
+         BoxCollider2DComponent, CircleCollider2DComponent>(registry_, scene->registry_, scene->entities_);
 
     return scene;
 }
@@ -83,6 +137,7 @@ void Scene::render(const glm::mat4& view, const glm::mat4& projection)
 
 void Scene::update()
 {
+    step(timestep_.delta());
     auto view = registry_.view<TransformComponent, CameraComponent>();
     for (auto entity : view)
     {
