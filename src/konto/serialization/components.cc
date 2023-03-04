@@ -1,3 +1,7 @@
+#include <memory>
+
+#include <kontomire.h>
+
 #include "konto/core/camera.h"
 #include "konto/serialization/serialization.h"
 
@@ -28,19 +32,22 @@ Serializable::Transform SceneSerializer::convert(const TransformComponent& compo
             {component.translation.x, component.translation.y, component.translation.z}};
 }
 
-Serializable::SpriteRenderer SceneSerializer::convert(const SpriteRendererComponent& component)
+flatbuffers::Offset<Serializable::SpriteRenderer> SceneSerializer::convert(flatbuffers::FlatBufferBuilder& buffer,
+                                                                           const SpriteRendererComponent& component)
 {
-    return {component.enabled,
-            {component.color.r, component.color.g, component.color.b, component.color.a},
-            component.tiling_factor};
+    Serializable::Color* color =
+        new Serializable::Color{component.color.r, component.color.g, component.color.b, component.color.a};
+    return Serializable::CreateSpriteRendererDirect(buffer, component.enabled, component.texture_path.c_str(), color,
+                                                    component.tiling_factor);
 }
 
-Serializable::CircleRenderer SceneSerializer::convert(const CircleRendererComponent& component)
+flatbuffers::Offset<Serializable::CircleRenderer> SceneSerializer::convert(flatbuffers::FlatBufferBuilder& buffer,
+                                                                           const CircleRendererComponent& component)
 {
-    return {component.enabled,
-            {component.color.r, component.color.g, component.color.b, component.color.a},
-            component.fade,
-            component.thickness};
+    Serializable::Color* color =
+        new Serializable::Color{component.color.r, component.color.g, component.color.b, component.color.a};
+    return Serializable::CreateCircleRendererDirect(buffer, component.enabled, component.texture_path.c_str(), color,
+                                                    component.fade, component.thickness);
 }
 
 CameraComponent SceneSerializer::convert(const Serializable::Camera& component)
@@ -78,8 +85,13 @@ SpriteRendererComponent SceneSerializer::convert(const Serializable::SpriteRende
     SpriteRendererComponent sprite_component;
     sprite_component.enabled = component.enabled();
     sprite_component.tiling_factor = component.tiling_factor();
-    auto color = component.color();
-    sprite_component.color = {color.r(), color.g(), color.b(), color.a()};
+    sprite_component.texture_path =
+        component.texture_path()->c_str() == nullptr ? "" : component.texture_path()->c_str();
+    sprite_component.texture = sprite_component.texture_path.empty()
+                                   ? nullptr
+                                   : Knt::Texture2D::load(sprite_component.texture_path, "SquareTexture");
+    sprite_component.color = {component.color()->r(), component.color()->g(), component.color()->b(),
+                              component.color()->a()};
     return sprite_component;
 }
 
@@ -89,8 +101,13 @@ CircleRendererComponent SceneSerializer::convert(const Serializable::CircleRende
     circle_component.fade = component.fade();
     circle_component.enabled = component.enabled();
     circle_component.thickness = component.thickness();
-    auto color = component.color();
-    circle_component.color = {color.r(), color.g(), color.b(), color.a()};
+    circle_component.texture_path =
+        component.texture_path()->c_str() == nullptr ? "" : component.texture_path()->c_str();
+    circle_component.texture = circle_component.texture_path.empty()
+                                   ? nullptr
+                                   : Knt::Texture2D::load(circle_component.texture_path, "CircleTexture");
+    circle_component.color = {component.color()->r(), component.color()->g(), component.color()->b(),
+                              component.color()->a()};
     return circle_component;
 }
 

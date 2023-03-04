@@ -2,6 +2,7 @@
 #define __KONTO_COMPONENTS_RENDERER_2D_H__
 
 #include <memory>
+#include <string>
 
 #include <kontomire.h>
 
@@ -14,6 +15,8 @@ struct SpriteRendererComponent
 
     float tiling_factor{1.0f};
     glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+
+    std::string texture_path{};
     std::shared_ptr<Knt::Texture2D> texture{nullptr};
 
     SpriteRendererComponent() = default;
@@ -27,6 +30,9 @@ struct CircleRendererComponent
     float fade{0.005f};
     float thickness{1.0f};
     glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+
+    std::string texture_path{};
+    std::shared_ptr<Knt::Texture2D> texture{nullptr};
 
     CircleRendererComponent() = default;
     CircleRendererComponent(const CircleRendererComponent&) = default;

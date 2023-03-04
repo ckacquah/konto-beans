@@ -24,8 +24,10 @@ struct Transform;
 struct Camera;
 
 struct SpriteRenderer;
+struct SpriteRendererBuilder;
 
 struct CircleRenderer;
+struct CircleRendererBuilder;
 
 enum Component : uint8_t
 {
@@ -314,84 +316,194 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) Camera FLATBUFFERS_FINAL_CLASS
 };
 FLATBUFFERS_STRUCT_END(Camera, 36);
 
-FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) SpriteRenderer FLATBUFFERS_FINAL_CLASS
+struct SpriteRenderer FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 {
-  private:
-    uint8_t enabled_;
-    int8_t padding0__;
-    int16_t padding1__;
-    Konto::Serializable::Color color_;
-    float tiling_factor_;
-
-  public:
-    SpriteRenderer() : enabled_(0), padding0__(0), padding1__(0), color_(), tiling_factor_(0)
+    typedef SpriteRendererBuilder Builder;
+    enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE
     {
-        (void)padding0__;
-        (void)padding1__;
-    }
-    SpriteRenderer(bool _enabled, const Konto::Serializable::Color& _color, float _tiling_factor)
-        : enabled_(::flatbuffers::EndianScalar(static_cast<uint8_t>(_enabled))), padding0__(0), padding1__(0),
-          color_(_color), tiling_factor_(::flatbuffers::EndianScalar(_tiling_factor))
-    {
-        (void)padding0__;
-        (void)padding1__;
-    }
+        VT_ENABLED = 4,
+        VT_TEXTURE_PATH = 6,
+        VT_COLOR = 8,
+        VT_TILING_FACTOR = 10
+    };
     bool enabled() const
     {
-        return ::flatbuffers::EndianScalar(enabled_) != 0;
+        return GetField<uint8_t>(VT_ENABLED, 0) != 0;
     }
-    const Konto::Serializable::Color& color() const
+    const ::flatbuffers::String* texture_path() const
     {
-        return color_;
+        return GetPointer<const ::flatbuffers::String*>(VT_TEXTURE_PATH);
+    }
+    const Konto::Serializable::Color* color() const
+    {
+        return GetStruct<const Konto::Serializable::Color*>(VT_COLOR);
     }
     float tiling_factor() const
     {
-        return ::flatbuffers::EndianScalar(tiling_factor_);
+        return GetField<float>(VT_TILING_FACTOR, 0.0f);
+    }
+    bool Verify(::flatbuffers::Verifier& verifier) const
+    {
+        return VerifyTableStart(verifier) && VerifyField<uint8_t>(verifier, VT_ENABLED, 1) &&
+               VerifyOffset(verifier, VT_TEXTURE_PATH) && verifier.VerifyString(texture_path()) &&
+               VerifyField<Konto::Serializable::Color>(verifier, VT_COLOR, 4) &&
+               VerifyField<float>(verifier, VT_TILING_FACTOR, 4) && verifier.EndTable();
     }
 };
-FLATBUFFERS_STRUCT_END(SpriteRenderer, 24);
 
-FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CircleRenderer FLATBUFFERS_FINAL_CLASS
+struct SpriteRendererBuilder
 {
-  private:
-    uint8_t enabled_;
-    int8_t padding0__;
-    int16_t padding1__;
-    Konto::Serializable::Color color_;
-    float fade_;
-    float thickness_;
+    typedef SpriteRenderer Table;
+    ::flatbuffers::FlatBufferBuilder& fbb_;
+    ::flatbuffers::uoffset_t start_;
+    void add_enabled(bool enabled)
+    {
+        fbb_.AddElement<uint8_t>(SpriteRenderer::VT_ENABLED, static_cast<uint8_t>(enabled), 0);
+    }
+    void add_texture_path(::flatbuffers::Offset<::flatbuffers::String> texture_path)
+    {
+        fbb_.AddOffset(SpriteRenderer::VT_TEXTURE_PATH, texture_path);
+    }
+    void add_color(const Konto::Serializable::Color* color)
+    {
+        fbb_.AddStruct(SpriteRenderer::VT_COLOR, color);
+    }
+    void add_tiling_factor(float tiling_factor)
+    {
+        fbb_.AddElement<float>(SpriteRenderer::VT_TILING_FACTOR, tiling_factor, 0.0f);
+    }
+    explicit SpriteRendererBuilder(::flatbuffers::FlatBufferBuilder& _fbb) : fbb_(_fbb)
+    {
+        start_ = fbb_.StartTable();
+    }
+    ::flatbuffers::Offset<SpriteRenderer> Finish()
+    {
+        const auto end = fbb_.EndTable(start_);
+        auto o = ::flatbuffers::Offset<SpriteRenderer>(end);
+        return o;
+    }
+};
 
-  public:
-    CircleRenderer() : enabled_(0), padding0__(0), padding1__(0), color_(), fade_(0), thickness_(0)
+inline ::flatbuffers::Offset<SpriteRenderer> CreateSpriteRenderer(
+    ::flatbuffers::FlatBufferBuilder& _fbb, bool enabled = false,
+    ::flatbuffers::Offset<::flatbuffers::String> texture_path = 0, const Konto::Serializable::Color* color = nullptr,
+    float tiling_factor = 0.0f)
+{
+    SpriteRendererBuilder builder_(_fbb);
+    builder_.add_tiling_factor(tiling_factor);
+    builder_.add_color(color);
+    builder_.add_texture_path(texture_path);
+    builder_.add_enabled(enabled);
+    return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<SpriteRenderer> CreateSpriteRendererDirect(
+    ::flatbuffers::FlatBufferBuilder& _fbb, bool enabled = false, const char* texture_path = nullptr,
+    const Konto::Serializable::Color* color = nullptr, float tiling_factor = 0.0f)
+{
+    auto texture_path__ = texture_path ? _fbb.CreateString(texture_path) : 0;
+    return Konto::Serializable::CreateSpriteRenderer(_fbb, enabled, texture_path__, color, tiling_factor);
+}
+
+struct CircleRenderer FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
+{
+    typedef CircleRendererBuilder Builder;
+    enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE
     {
-        (void)padding0__;
-        (void)padding1__;
-    }
-    CircleRenderer(bool _enabled, const Konto::Serializable::Color& _color, float _fade, float _thickness)
-        : enabled_(::flatbuffers::EndianScalar(static_cast<uint8_t>(_enabled))), padding0__(0), padding1__(0),
-          color_(_color), fade_(::flatbuffers::EndianScalar(_fade)), thickness_(::flatbuffers::EndianScalar(_thickness))
-    {
-        (void)padding0__;
-        (void)padding1__;
-    }
+        VT_ENABLED = 4,
+        VT_TEXTURE_PATH = 6,
+        VT_COLOR = 8,
+        VT_FADE = 10,
+        VT_THICKNESS = 12
+    };
     bool enabled() const
     {
-        return ::flatbuffers::EndianScalar(enabled_) != 0;
+        return GetField<uint8_t>(VT_ENABLED, 0) != 0;
     }
-    const Konto::Serializable::Color& color() const
+    const ::flatbuffers::String* texture_path() const
     {
-        return color_;
+        return GetPointer<const ::flatbuffers::String*>(VT_TEXTURE_PATH);
+    }
+    const Konto::Serializable::Color* color() const
+    {
+        return GetStruct<const Konto::Serializable::Color*>(VT_COLOR);
     }
     float fade() const
     {
-        return ::flatbuffers::EndianScalar(fade_);
+        return GetField<float>(VT_FADE, 0.0f);
     }
     float thickness() const
     {
-        return ::flatbuffers::EndianScalar(thickness_);
+        return GetField<float>(VT_THICKNESS, 0.0f);
+    }
+    bool Verify(::flatbuffers::Verifier& verifier) const
+    {
+        return VerifyTableStart(verifier) && VerifyField<uint8_t>(verifier, VT_ENABLED, 1) &&
+               VerifyOffset(verifier, VT_TEXTURE_PATH) && verifier.VerifyString(texture_path()) &&
+               VerifyField<Konto::Serializable::Color>(verifier, VT_COLOR, 4) &&
+               VerifyField<float>(verifier, VT_FADE, 4) && VerifyField<float>(verifier, VT_THICKNESS, 4) &&
+               verifier.EndTable();
     }
 };
-FLATBUFFERS_STRUCT_END(CircleRenderer, 28);
+
+struct CircleRendererBuilder
+{
+    typedef CircleRenderer Table;
+    ::flatbuffers::FlatBufferBuilder& fbb_;
+    ::flatbuffers::uoffset_t start_;
+    void add_enabled(bool enabled)
+    {
+        fbb_.AddElement<uint8_t>(CircleRenderer::VT_ENABLED, static_cast<uint8_t>(enabled), 0);
+    }
+    void add_texture_path(::flatbuffers::Offset<::flatbuffers::String> texture_path)
+    {
+        fbb_.AddOffset(CircleRenderer::VT_TEXTURE_PATH, texture_path);
+    }
+    void add_color(const Konto::Serializable::Color* color)
+    {
+        fbb_.AddStruct(CircleRenderer::VT_COLOR, color);
+    }
+    void add_fade(float fade)
+    {
+        fbb_.AddElement<float>(CircleRenderer::VT_FADE, fade, 0.0f);
+    }
+    void add_thickness(float thickness)
+    {
+        fbb_.AddElement<float>(CircleRenderer::VT_THICKNESS, thickness, 0.0f);
+    }
+    explicit CircleRendererBuilder(::flatbuffers::FlatBufferBuilder& _fbb) : fbb_(_fbb)
+    {
+        start_ = fbb_.StartTable();
+    }
+    ::flatbuffers::Offset<CircleRenderer> Finish()
+    {
+        const auto end = fbb_.EndTable(start_);
+        auto o = ::flatbuffers::Offset<CircleRenderer>(end);
+        return o;
+    }
+};
+
+inline ::flatbuffers::Offset<CircleRenderer> CreateCircleRenderer(
+    ::flatbuffers::FlatBufferBuilder& _fbb, bool enabled = false,
+    ::flatbuffers::Offset<::flatbuffers::String> texture_path = 0, const Konto::Serializable::Color* color = nullptr,
+    float fade = 0.0f, float thickness = 0.0f)
+{
+    CircleRendererBuilder builder_(_fbb);
+    builder_.add_thickness(thickness);
+    builder_.add_fade(fade);
+    builder_.add_color(color);
+    builder_.add_texture_path(texture_path);
+    builder_.add_enabled(enabled);
+    return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<CircleRenderer> CreateCircleRendererDirect(
+    ::flatbuffers::FlatBufferBuilder& _fbb, bool enabled = false, const char* texture_path = nullptr,
+    const Konto::Serializable::Color* color = nullptr, float fade = 0.0f, float thickness = 0.0f)
+{
+    auto texture_path__ = texture_path ? _fbb.CreateString(texture_path) : 0;
+    return Konto::Serializable::CreateCircleRenderer(_fbb, enabled, texture_path__, color, fade, thickness);
+}
 
 inline bool VerifyComponent(::flatbuffers::Verifier& verifier, const void* obj, Component type)
 {
@@ -407,10 +519,12 @@ inline bool VerifyComponent(::flatbuffers::Verifier& verifier, const void* obj, 
         return verifier.VerifyField<Konto::Serializable::Camera>(static_cast<const uint8_t*>(obj), 0, 4);
     }
     case Component_SpriteRenderer: {
-        return verifier.VerifyField<Konto::Serializable::SpriteRenderer>(static_cast<const uint8_t*>(obj), 0, 4);
+        auto ptr = reinterpret_cast<const Konto::Serializable::SpriteRenderer*>(obj);
+        return verifier.VerifyTable(ptr);
     }
     case Component_CircleRenderer: {
-        return verifier.VerifyField<Konto::Serializable::CircleRenderer>(static_cast<const uint8_t*>(obj), 0, 4);
+        auto ptr = reinterpret_cast<const Konto::Serializable::CircleRenderer*>(obj);
+        return verifier.VerifyTable(ptr);
     }
     default:
         return true;

@@ -64,7 +64,10 @@ void Scene::render()
             auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
             if (circle.enabled)
             {
-                Knt::Renderer2D::draw_circle(transform.transform(), circle.color, circle.thickness, circle.fade);
+                circle.texture == nullptr
+                    ? Knt::Renderer2D::draw_circle(transform.transform(), circle.color, circle.thickness, circle.fade)
+                    : Knt::Renderer2D::draw_circle(transform.transform(), circle.texture, circle.color,
+                                                   circle.thickness, circle.fade);
             }
         }
     }
