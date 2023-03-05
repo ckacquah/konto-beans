@@ -1,3 +1,4 @@
+#include <iostream>
 #include <memory>
 
 #include <box2d/box2d.h>
@@ -53,7 +54,7 @@ void Scene::start()
 
 void Scene::step(float delta)
 {
-    world_->Step(1.0f / 60.0f, velocity_iterations_, position_iterations_);
+    world_->Step(delta, velocity_iterations_, position_iterations_);
     auto view = registry_.view<TransformComponent, RigidBody2DComponent>();
     for (auto entity : view)
     {
@@ -66,7 +67,7 @@ void Scene::step(float delta)
 }
 
 template <typename... Component>
-void Scene::copy(entt::registry& source, entt::registry& destination,
+void Scene::copy(const entt::registry& source, entt::registry& destination,
                  std::unordered_map<uint64_t, entt::entity>& entities)
 {
     (
@@ -185,6 +186,39 @@ void Scene::resize(uint32_t width, uint32_t height)
         auto& component = view.get<CameraComponent>(entity);
         component.camera.set_viewport_size(width, height);
     }
+}
+
+Scene::~Scene()
+{
+    if (world_ != nullptr)
+    {
+        delete world_;
+        world_ = nullptr;
+    }
+
+    auto view = registry_.view<RigidBody2DComponent>();
+    for (auto entity : view)
+    {
+        auto& rigid_body = view.get<RigidBody2DComponent>(entity);
+        rigid_body.body = nullptr;
+    }
+}
+
+Scene::Scene(const Scene& other)
+{
+    world_ = other.world_;
+    timestep_ = other.timestep_;
+    velocity_iterations_ = other.velocity_iterations_;
+    position_iterations_ = other.position_iterations_;
+
+    for (auto& old_entity : other.registry_.view<UUIDComponent>())
+    {
+        auto [tag_component, uuid_component] = other.registry_.get<TagComponent, UUIDComponent>(old_entity);
+        auto new_entity = create(tag_component.tag, uuid_component.id);
+    }
+
+    copy<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, RigidBody2DComponent,
+         BoxCollider2DComponent, CircleCollider2DComponent>(other.registry_, registry_, entities_);
 }
 
 } // namespace Konto

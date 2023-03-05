@@ -13,8 +13,8 @@ namespace Konto
 
 struct RigidBody2DComponent
 {
-    b2Body* body;
-    b2BodyDef definition;
+    b2Body* body{};
+    b2BodyDef definition{};
 
     bool enabled{true};
 
@@ -24,8 +24,8 @@ struct RigidBody2DComponent
 
 struct BoxCollider2DComponent
 {
-    b2FixtureDef fixture;
-    b2PolygonShape shape;
+    b2FixtureDef fixture{};
+    b2PolygonShape shape{};
 
     bool enabled{true};
     glm::vec2 size{1.0f, 1.0f};
@@ -36,8 +36,8 @@ struct BoxCollider2DComponent
 
 struct CircleCollider2DComponent
 {
-    b2FixtureDef fixture;
-    b2CircleShape shape;
+    b2FixtureDef fixture{};
+    b2CircleShape shape{};
 
     bool enabled{true};
     float radius{0.5f};

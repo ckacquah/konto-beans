@@ -2,18 +2,21 @@
 #define __KONTO_CORE_TIMESTEP_H__
 
 #include <chrono>
-#include <ctime>
+
+using namespace std::chrono_literals;
 
 namespace Konto
 {
 
+static const std::chrono::nanoseconds second{1s};
+
 class TimeStep
 {
   private:
-    std::time_t timestep_{};
+    std::chrono::system_clock::time_point timestep_{};
 
   public:
-    TimeStep() : timestep_(std::time(nullptr))
+    TimeStep() : timestep_(std::chrono::system_clock::now())
     {
     }
     TimeStep(const TimeStep& timestep) = default;
@@ -21,8 +24,9 @@ class TimeStep
     float delta()
     {
         auto prev = timestep_;
-        timestep_ = std::time(nullptr);
-        return (prev - timestep_) / 1000;
+        timestep_ = std::chrono::system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(timestep_ - prev);
+        return static_cast<float>(duration.count()) / second.count();
     }
 };
 
