@@ -24,20 +24,22 @@ class Scene
   private:
     TimeStep timestep_{};
 
-    b2World* world_;
+    b2World* world_{};
 
-    entt::registry registry_;
-    std::unordered_map<uint64_t, entt::entity> entities_;
+    entt::registry registry_{};
+    std::unordered_map<uint64_t, entt::entity> entities_{};
 
     int32 velocity_iterations_{6};
     int32 position_iterations_{2};
 
     template <typename... Component>
-    static void copy(entt::registry& source, entt::registry& destination,
+    static void copy(const entt::registry& source, entt::registry& destination,
                      std::unordered_map<uint64_t, entt::entity>& entities);
 
   public:
     Scene() = default;
+    Scene(const Scene& other);
+    ~Scene();
 
     void start();
     void update();
