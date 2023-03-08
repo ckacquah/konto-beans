@@ -44,6 +44,7 @@ class Scene
     void start();
     void update();
     void render();
+    void render_with_camera();
     void step(float delta);
     void resize(uint32_t width, uint32_t height);
     void render(const glm::mat4& view, const glm::mat4& projection);

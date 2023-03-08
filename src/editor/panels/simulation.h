@@ -11,8 +11,17 @@
 namespace Konto::Editor
 {
 
+enum SimulationState
+{
+    PLAYING,
+    STOPPED,
+    PAUSED,
+};
+
 struct SimulationPanelContext
 {
+    SimulationState state{SimulationState::STOPPED};
+
     std::shared_ptr<Scene> scene{};
     std::shared_ptr<EditorContext> editor{};
     std::shared_ptr<Knt::FrameBuffer> framebuffer{};
@@ -32,7 +41,7 @@ class SimulationPanel
     static void pause();
     static void update();
     static void render();
-    static void init(const std::shared_ptr<EditorContext>& editor);
+    static void init(std::shared_ptr<EditorContext> editor);
 };
 
 } // namespace Konto::Editor

@@ -13,7 +13,7 @@ static const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTr
                                         ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
                                         ImGuiTreeNodeFlags_FramePadding;
 
-void InspectorPanel::init(const std::shared_ptr<EditorContext>& editor)
+void InspectorPanel::init(std::shared_ptr<EditorContext> editor)
 {
     context_.editor = editor;
 }
@@ -22,7 +22,7 @@ void InspectorPanel::render()
 {
     ImGui::Begin("Inspector");
     {
-        if (context_.editor->active_entity)
+        if (context_.editor->selected_entity)
         {
             render<TagComponent>("Tag", false);
             render<TransformComponent>("Transform", false);
@@ -61,9 +61,9 @@ void InspectorPanel::render_add_component()
 
 template <typename T> void InspectorPanel::render_add_menu_item(const std::string& name)
 {
-    if (!context_.editor->active_entity.has<T>() && ImGui::MenuItem(name.c_str()))
+    if (!context_.editor->selected_entity.has<T>() && ImGui::MenuItem(name.c_str()))
     {
-        context_.editor->active_entity.add<T>();
+        context_.editor->selected_entity.add<T>();
     }
 }
 
@@ -83,7 +83,7 @@ template <typename T> void InspectorPanel::render_settings(const std::string& ti
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
         {
-            context_.editor->active_entity.remove<T>();
+            context_.editor->selected_entity.remove<T>();
             ImGui::CloseCurrentPopup();
         }
 
@@ -100,9 +100,9 @@ template <typename T> void InspectorPanel::render_settings(const std::string& ti
 
 template <typename T> void InspectorPanel::render(const std::string& title, bool toggle)
 {
-    if (context_.editor->active_entity.has<T>() && ImGui::TreeNodeEx(title.c_str(), flags))
+    if (context_.editor->selected_entity.has<T>() && ImGui::TreeNodeEx(title.c_str(), flags))
     {
-        auto& component = context_.editor->active_entity.get<T>();
+        auto& component = context_.editor->selected_entity.get<T>();
         render(component);
         if (toggle)
         {

@@ -29,7 +29,7 @@ class ScenePanel
 
   public:
     static void render();
-    static void init(const std::shared_ptr<EditorContext>& editor_context);
+    static void init(std::shared_ptr<EditorContext> editor_context);
 };
 
 } // namespace Konto::Editor
