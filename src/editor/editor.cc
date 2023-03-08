@@ -1,5 +1,4 @@
-#include <fstream>
-#include <iostream>
+#include <memory>
 
 #include <kontomire.h>
 
@@ -14,12 +13,10 @@ using namespace Konto::Editor;
 
 int main()
 {
-    Window::start("Konto Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
+    auto app{std::make_unique<Application>()};
+    app->start("Konto Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    auto context = std::make_shared<EditorContext>();
-    context->width = WINDOW_WIDTH;
-    context->height = WINDOW_HEIGHT;
-    context->scene = std::make_shared<Scene>();
+    auto context = app->context();
 
     MainMenu::init(context);
     ScenePanel::init(context);
@@ -27,9 +24,9 @@ int main()
     InspectorPanel::init(context);
     SimulationPanel::init(context);
 
-    while (!Window::is_closed())
+    while (!app->closed())
     {
-        Window::begin();
+        app->begin_frame();
 
         MainMenu::render();
         ScenePanel::render();
@@ -37,9 +34,8 @@ int main()
         InspectorPanel::render();
         SimulationPanel::render();
 
-        Window::end();
+        app->end_frame();
     }
 
-    Window::destroy();
     return 0;
 }

@@ -50,6 +50,7 @@ add_library(
     include/konto.h
     include/konto/core/uuid.h
     include/konto/core/scene.h
+    include/konto/core/input.h
     include/konto/core/entity.h
     include/konto/core/camera.h
     include/konto/core/timestep.h
@@ -71,6 +72,8 @@ add_executable(
     src/editor/context.h
     src/editor/window.h
     src/editor/window.cc
+    src/editor/application.h
+    src/editor/application.cc
     src/editor/menus/main.h
     src/editor/menus/main.cc
     src/editor/menus/dialogs.h

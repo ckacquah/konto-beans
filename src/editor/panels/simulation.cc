@@ -7,16 +7,30 @@ SimulationPanelContext SimulationPanel::context_{};
 
 void SimulationPanel::stop()
 {
+    if (context_.state != SimulationState::STOPPED)
+    {
+        context_.scene = context_.editor->scene->clone();
+        context_.state = SimulationState::STOPPED;
+    }
 }
 
 void SimulationPanel::play()
 {
-    context_.scene = context_.editor->scene->clone();
-    context_.scene->start();
+    switch (context_.state)
+    {
+    case SimulationState::STOPPED:
+        context_.scene = context_.editor->scene->clone();
+        context_.scene->start();
+    case SimulationState::PAUSED:
+        context_.state = SimulationState::PLAYING;
+    default:
+        break;
+    }
 }
 
 void SimulationPanel::pause()
 {
+    context_.state = context_.state == SimulationState::PLAYING ? SimulationState::PAUSED : context_.state;
 }
 
 void SimulationPanel::update()
@@ -26,7 +40,8 @@ void SimulationPanel::update()
     Knt::Renderer::set_clear_color(glm::vec4(1.0f));
     Knt::Renderer::clear();
 
-    context_.scene->update();
+    context_.state == SimulationState::PLAYING ? context_.scene->update() : context_.scene->render_with_camera();
+
     context_.framebuffer->clear_attachment(1, -1);
     context_.framebuffer->unbind();
 }
@@ -42,8 +57,13 @@ void SimulationPanel::render()
             {
                 SimulationPanel::play();
             }
+            if (ImGui::Button("Pause"))
+            {
+                SimulationPanel::pause();
+            }
             if (ImGui::Button("Stop"))
             {
+                SimulationPanel::stop();
             }
             ImGui::EndMenuBar();
         }
@@ -59,11 +79,10 @@ void SimulationPanel::render()
     ImGui::End();
 }
 
-void SimulationPanel::init(const std::shared_ptr<EditorContext>& editor)
+void SimulationPanel::init(std::shared_ptr<EditorContext> editor)
 {
     context_.editor = editor;
-    context_.scene = editor->scene->clone();
-    context_.scene->start();
+    context_.scene = context_.editor->scene->clone();
     context_.scene->resize(editor->width, editor->height);
 
     Knt::FramebufferSpecification framebuffer_specs{};

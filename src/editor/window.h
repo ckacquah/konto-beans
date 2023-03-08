@@ -8,36 +8,37 @@
 namespace Konto::Editor
 {
 
-struct WindowData
-{
-    uint32_t width{};
-    uint32_t height{};
-
-    std::string name{};
-
-    GLFWwindow* handle{};
-};
-
 class Window
 {
   private:
-    static WindowData context_;
+    uint32_t width_{};
+    uint32_t height_{};
+
+    std::string name_{};
+
+    GLFWwindow* handle_{};
 
   public:
-    static void end();
-    static void begin();
-    static void destroy();
-    static bool is_closed();
-    static void start(const std::string& title, uint32_t width, uint32_t height);
+    Window(const std::string& title, uint32_t width, uint32_t height);
+    ~Window();
 
-    static uint32_t width()
+    void update();
+    void destroy();
+    bool is_closed() const;
+
+    GLFWwindow* handle()
     {
-        return context_.width;
+        return handle_;
     }
 
-    static uint32_t height()
+    uint32_t width()
     {
-        return context_.height;
+        return width_;
+    }
+
+    uint32_t height()
+    {
+        return height_;
     }
 };
 

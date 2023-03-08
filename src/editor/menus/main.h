@@ -10,7 +10,7 @@
 namespace Konto::Editor
 {
 
-struct MainMenuData
+struct MainMenuContext
 {
     std::shared_ptr<EditorContext> editor{};
 };
@@ -18,11 +18,11 @@ struct MainMenuData
 class MainMenu
 {
   private:
-    static MainMenuData context_;
+    static MainMenuContext context_;
 
   public:
     static void render();
-    static void init(const std::shared_ptr<EditorContext>& editor);
+    static void init(std::shared_ptr<EditorContext> editor);
 };
 
 } // namespace Konto::Editor

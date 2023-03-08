@@ -12,11 +12,15 @@ struct EditorContext
     uint32_t height{};
     std::string scene_path{};
 
-    Entity active_entity;
+    Entity selected_entity;
+    InputContext input{};
     std::shared_ptr<Scene> scene{};
 
     EditorContext() = default;
     EditorContext(const EditorContext& other) = default;
+    EditorContext(uint32_t _width, uint32_t _height) : width(_width), height(_height), scene(std::make_shared<Scene>())
+    {
+    }
 };
 
 } // namespace Konto::Editor

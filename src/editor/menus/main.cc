@@ -10,9 +10,9 @@
 namespace Konto::Editor
 {
 
-MainMenuData MainMenu::context_{};
+MainMenuContext MainMenu::context_{};
 
-void MainMenu::init(const std::shared_ptr<EditorContext>& editor)
+void MainMenu::init(std::shared_ptr<EditorContext> editor)
 {
     context_.editor = editor;
 }
@@ -26,9 +26,8 @@ void MainMenu::render()
             if (ImGui::MenuItem("New Scene"))
             {
                 context_.editor->scene_path = "";
-                context_.editor->scene = nullptr;
                 context_.editor->scene = std::make_shared<Scene>();
-                context_.editor->active_entity = Entity();
+                context_.editor->selected_entity = Entity();
             }
             if (ImGui::MenuItem("Open Scene"))
             {
@@ -46,14 +45,13 @@ void MainMenu::render()
                     project_file.read(data, length);
                     project_file.close();
 
-                    context_.editor->scene = nullptr;
                     context_.editor->scene = SceneSerializer::deserialize((uint8_t*)data, length);
-                    context_.editor->active_entity = Entity();
+                    context_.editor->selected_entity = Entity();
                 }
             }
             if (ImGui::MenuItem("Save Scene"))
             {
-                if (!context_.editor->scene_path.empty())
+                if (context_.editor->scene_path.empty())
                 {
                     context_.editor->scene_path = FileDialog::save("", "scene.konto", {{"Konto Scene File", "konto"}});
                 }

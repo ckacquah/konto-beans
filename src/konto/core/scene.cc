@@ -32,8 +32,7 @@ void Scene::start()
         auto view = registry_.view<RigidBody2DComponent, BoxCollider2DComponent>();
         for (auto entity : view)
         {
-            auto& rigid_body = view.get<RigidBody2DComponent>(entity);
-            auto& box_collider = view.get<BoxCollider2DComponent>(entity);
+            auto [rigid_body, box_collider] = view.get<RigidBody2DComponent, BoxCollider2DComponent>(entity);
             box_collider.shape.SetAsBox(box_collider.size.x / 2, box_collider.size.y / 2);
             box_collider.fixture.shape = &box_collider.shape;
             rigid_body.body->CreateFixture(&box_collider.fixture);
@@ -43,8 +42,7 @@ void Scene::start()
         auto view = registry_.view<RigidBody2DComponent, CircleCollider2DComponent>();
         for (auto entity : view)
         {
-            auto& rigid_body = view.get<RigidBody2DComponent>(entity);
-            auto& circle_collider = view.get<CircleCollider2DComponent>(entity);
+            auto [rigid_body, circle_collider] = view.get<RigidBody2DComponent, CircleCollider2DComponent>(entity);
             circle_collider.shape.m_radius = circle_collider.radius;
             circle_collider.fixture.shape = &circle_collider.shape;
             rigid_body.body->CreateFixture(&circle_collider.fixture);
@@ -95,6 +93,21 @@ std::shared_ptr<Scene> Scene::clone()
          BoxCollider2DComponent, CircleCollider2DComponent>(registry_, scene->registry_, scene->entities_);
 
     return scene;
+}
+
+void Scene::render_with_camera()
+{
+    timestep_.delta();
+    auto view = registry_.view<TransformComponent, CameraComponent>();
+    for (auto entity : view)
+    {
+        auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+        if (camera.primary && camera.enabled)
+        {
+            render(transform.transform(), camera.camera.projection());
+            break;
+        }
+    }
 }
 
 void Scene::render()

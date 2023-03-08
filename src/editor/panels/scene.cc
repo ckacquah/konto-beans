@@ -14,10 +14,10 @@ void ScenePanel::render()
     ScenePanel::render_entities();
 }
 
-void ScenePanel::init(const std::shared_ptr<EditorContext>& editor)
+void ScenePanel::init(std::shared_ptr<EditorContext> editor)
 {
     context_.editor = editor;
-    context_.editor->active_entity = Entity();
+    context_.editor->selected_entity = Entity();
 }
 
 void ScenePanel::render_entities()
@@ -58,7 +58,7 @@ void ScenePanel::render_entity(Entity entity)
     {
         if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
         {
-            context_.editor->active_entity = entity;
+            context_.editor->selected_entity = entity;
         }
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
         {
@@ -71,12 +71,12 @@ void ScenePanel::render_entity(Entity entity)
         if (ImGui::MenuItem("Delete"))
         {
             context_.editor->scene->destroy(entity);
-            context_.editor->active_entity = Entity();
+            context_.editor->selected_entity = Entity();
             ImGui::CloseCurrentPopup();
         }
         if (ImGui::MenuItem("Edit"))
         {
-            context_.editor->active_entity = entity;
+            context_.editor->selected_entity = entity;
         }
         if (ImGui::MenuItem("Duplicate"))
         {

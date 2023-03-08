@@ -42,7 +42,7 @@ class InspectorPanel
 
   public:
     static void render();
-    static void init(const std::shared_ptr<EditorContext>& editor);
+    static void init(std::shared_ptr<EditorContext> editor);
 };
 
 } // namespace Konto::Editor

@@ -24,7 +24,7 @@ void ViewportPanel::render()
     ViewportPanel::render_viewport();
 }
 
-void ViewportPanel::init(const std::shared_ptr<EditorContext>& editor)
+void ViewportPanel::init(std::shared_ptr<EditorContext> editor)
 {
     context_.editor = editor;
     resize(editor->width, editor->height);
@@ -71,6 +71,29 @@ void ViewportPanel::render_viewport()
 
         ImGui::BeginChild(context_.camera.is_orthographic() ? "Orthographic Viewport" : "Perspective Viewport");
         {
+            if (ImGui::IsWindowFocused())
+            {
+                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::UP))
+                {
+                    context_.camera_translation.y -= 0.05f;
+                }
+
+                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::DOWN))
+                {
+                    context_.camera_translation.y += 0.05f;
+                }
+
+                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::LEFT))
+                {
+                    context_.camera_translation.x += 0.05f;
+                }
+
+                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::RIGHT))
+                {
+                    context_.camera_translation.x -= 0.05f;
+                }
+            }
+
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
             resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);
