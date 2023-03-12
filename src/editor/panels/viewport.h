@@ -52,6 +52,112 @@ class ViewportPanel
     }
 };
 
+class KeyboardButtonObserver
+{
+  private:
+    ViewportPanelContext* context_{nullptr};
+
+  public:
+    KeyboardButtonObserver(ViewportPanelContext* context) : context_(context){};
+
+    void handle(const Event& event)
+    {
+        auto action = static_cast<const KeyboardButtonEvent&>(event).action();
+        auto button = static_cast<const KeyboardButtonEvent&>(event).button();
+
+        if (event.type() == KeyboardButtonEvent::descriptor && action != Input::Action::RELEASED)
+        {
+            switch (button)
+            {
+            case Input::Keyboard::Button::UP:
+                context_->camera_translation.y -= 0.05f;
+                break;
+            case Input::Keyboard::Button::DOWN:
+                context_->camera_translation.y += 0.05f;
+                break;
+            case Input::Keyboard::Button::RIGHT:
+                context_->camera_translation.x -= 0.05f;
+                break;
+            case Input::Keyboard::Button::LEFT:
+                context_->camera_translation.x += 0.05f;
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+};
+
+class MouseCursorEventObserver
+{
+  private:
+    ViewportPanelContext* context_{nullptr};
+
+  public:
+    MouseCursorEventObserver(ViewportPanelContext* context) : context_(context){};
+
+    void handle(const Event& event)
+    {
+        auto [x, y] = static_cast<const MouseCursorEvent&>(event).position();
+
+        if (event.type() == MouseCursorEvent::descriptor)
+        {
+            // context_->camera_translation.x = 0.001 * x;
+            // context_->camera_translation.y = 0.001 * y;
+        }
+    }
+};
+class ScrollInputEventObserver
+{
+  private:
+    ViewportPanelContext* context_{nullptr};
+
+  public:
+    ScrollInputEventObserver(ViewportPanelContext* context) : context_(context){};
+
+    void handle(const Event& event)
+    {
+        auto [x, y] = static_cast<const ScrollInputEvent&>(event).offset();
+
+        if (event.type() == ScrollInputEvent::descriptor)
+        {
+            context_->camera.set_orthographic_size(context_->camera.orthographic_size() + (-1 * y));
+        }
+    }
+};
+
+class MouseButtonObserver
+{
+  private:
+    ViewportPanelContext* context_{nullptr};
+
+  public:
+    MouseButtonObserver(ViewportPanelContext* context) : context_(context){};
+
+    void handle(const Event& event)
+    {
+        auto action = static_cast<const MouseButtonEvent&>(event).action();
+        auto button = static_cast<const MouseButtonEvent&>(event).button();
+
+        if (event.type() == MouseButtonEvent::descriptor && action != Input::Action::RELEASED)
+        {
+            switch (button)
+            {
+            case Input::Mouse::Button::LEFT:
+                context_->camera.set_orthographic_size(context_->camera.orthographic_size() + 0.05f);
+                break;
+            case Input::Mouse::Button::RIGHT:
+                context_->camera.set_orthographic_size(context_->camera.orthographic_size() - 0.05f);
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+};
+
 } // namespace Konto::Editor
 
 #endif // __KONTO_EDITOR_PANEL_VIEWPORT_H__

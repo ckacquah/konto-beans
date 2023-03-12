@@ -19,9 +19,7 @@ class Entity
   public:
     Entity() = default;
     Entity(const Entity& other) = default;
-    Entity(entt::entity handle, Scene* scene) : handle_(handle), scene_ptr_(scene)
-    {
-    }
+    Entity(entt::entity handle, Scene* scene) : handle_(handle), scene_ptr_(scene){};
 
     template <typename T> T& get()
     {

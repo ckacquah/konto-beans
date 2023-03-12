@@ -31,9 +31,7 @@ struct TagComponent
 
     TagComponent() = default;
     TagComponent(const TagComponent&) = default;
-    TagComponent(const std::string& title) : tag(title)
-    {
-    }
+    TagComponent(const std::string& title) : tag(title){};
 };
 
 struct TransformComponent

@@ -42,6 +42,7 @@ add_library(
     ${KONTO_BEANS}
     src/konto/konto.cc
     src/konto/core/uuid.cc
+    src/konto/core/event.cc
     src/konto/core/scene.cc
     src/konto/core/camera.cc
     src/konto/serialization/scene.cc
@@ -51,6 +52,7 @@ add_library(
     include/konto/core/uuid.h
     include/konto/core/scene.h
     include/konto/core/input.h
+    include/konto/core/event.h
     include/konto/core/entity.h
     include/konto/core/camera.h
     include/konto/core/timestep.h

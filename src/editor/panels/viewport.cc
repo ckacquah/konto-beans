@@ -29,6 +29,26 @@ void ViewportPanel::init(std::shared_ptr<EditorContext> editor)
     context_.editor = editor;
     resize(editor->width, editor->height);
 
+    static MouseButtonObserver mouse_obsever{&context_};
+    static KeyboardButtonObserver keyboard_obsever{&context_};
+    static ScrollInputEventObserver scroll_input_obsever{&context_};
+    static MouseCursorEventObserver mouse_cursor_obsever{&context_};
+
+    context_.editor->dispatcher.subscribe(
+        MouseButtonEvent::descriptor, std::bind(&MouseButtonObserver::handle, mouse_obsever, std::placeholders::_1));
+
+    context_.editor->dispatcher.subscribe(
+        KeyboardButtonEvent::descriptor,
+        std::bind(&KeyboardButtonObserver::handle, keyboard_obsever, std::placeholders::_1));
+
+    context_.editor->dispatcher.subscribe(
+        ScrollInputEvent::descriptor,
+        std::bind(&ScrollInputEventObserver::handle, scroll_input_obsever, std::placeholders::_1));
+
+    context_.editor->dispatcher.subscribe(
+        MouseCursorEvent::descriptor,
+        std::bind(&MouseCursorEventObserver::handle, mouse_cursor_obsever, std::placeholders::_1));
+
     Knt::FramebufferSpecification framebuffer_specs{};
     framebuffer_specs.width = editor->width;
     framebuffer_specs.height = editor->height;
@@ -71,29 +91,6 @@ void ViewportPanel::render_viewport()
 
         ImGui::BeginChild(context_.camera.is_orthographic() ? "Orthographic Viewport" : "Perspective Viewport");
         {
-            if (ImGui::IsWindowFocused())
-            {
-                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::UP))
-                {
-                    context_.camera_translation.y -= 0.05f;
-                }
-
-                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::DOWN))
-                {
-                    context_.camera_translation.y += 0.05f;
-                }
-
-                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::LEFT))
-                {
-                    context_.camera_translation.x += 0.05f;
-                }
-
-                if (context_.editor->input.keyboard.is_pressed(Input::Keyboard::Button::RIGHT))
-                {
-                    context_.camera_translation.x -= 0.05f;
-                }
-            }
-
             ImGui::Image(reinterpret_cast<void*>(context_.framebuffer->color_attachment()), ImGui::GetWindowSize(),
                          ImVec2{0, 1}, ImVec2{1, 0});
             resize(ImGui::GetWindowSize().y, ImGui::GetWindowSize().x);

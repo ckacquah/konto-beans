@@ -2,8 +2,8 @@
 #define __KONTO_CORE_INPUT_H__
 
 #include <algorithm>
-#include <tuple>
-#include <vector>
+#include <iterator>
+#include <string>
 
 namespace Konto
 {
@@ -13,41 +13,16 @@ namespace Input
 
 enum Type
 {
-    KEY,
     MOUSE,
     GAMEPAD,
-    JOYSTICK,
+    KEYBOARD,
 };
 
-enum Joystick
+enum Action
 {
-    ID_01 = 0,
-    ID_02 = 1,
-    ID_03 = 2,
-    ID_04 = 3,
-    ID_05 = 4,
-    ID_06 = 5,
-    ID_07 = 6,
-    ID_08 = 7,
-    ID_09 = 8,
-    ID_10 = 9,
-    ID_11 = 10,
-    ID_12 = 11,
-    ID_13 = 12,
-    ID_14 = 13,
-    ID_15 = 14,
-    ID_16 = 15,
-    MIN_ID = ID_01,
-    MAX_ID = ID_16,
-    CENTERED = 0,
-    UP = 1,
-    DOWN = 4,
-    LEFT = 8,
-    RIGHT = 2,
-    LEFT_UP = (LEFT | UP),
-    RIGHT_UP = (RIGHT | UP),
-    LEFT_DOWN = (LEFT | DOWN),
-    RIGHT_DOWN = (RIGHT | DOWN),
+    PRESSED,
+    RELEASED,
+    REPEATED,
 };
 
 namespace Keyboard
@@ -55,24 +30,6 @@ namespace Keyboard
 
 enum Button
 {
-    SPACE = 32,
-    APOSTROPHE = 39,
-    COMMA = 44,
-    MINUS = 45,
-    PERIOD = 46,
-    SLASH = 47,
-    ZERO = 48,
-    ONE = 49,
-    TWO = 50,
-    THREE = 51,
-    FOUR = 52,
-    FIVE = 53,
-    SIX = 54,
-    SEVEN = 55,
-    EIGHT = 56,
-    NINE = 57,
-    SEMICOLON = 59,
-    EQUAL = 61,
     A = 65,
     B = 66,
     C = 67,
@@ -99,31 +56,6 @@ enum Button
     X = 88,
     Y = 89,
     Z = 90,
-    LEFT_BRACKET = 91,
-    BACKSLASH = 92,
-    RIGHT_BRACKET = 93,
-    GRAVE_ACCENT = 96,
-    WORLD_1 = 161,
-    WORLD_2 = 162,
-    ESCAPE = 256,
-    ENTER = 257,
-    TAB = 258,
-    BACKSPACE = 259,
-    INSERT = 260,
-    DELETE = 261,
-    RIGHT = 262,
-    LEFT = 263,
-    DOWN = 264,
-    UP = 265,
-    PAGE_UP = 266,
-    PAGE_DOWN = 267,
-    HOME = 268,
-    END = 269,
-    CAPS_LOCK = 280,
-    SCROLL_LOCK = 281,
-    NUM_LOCK = 282,
-    PRINT_SCREEN = 283,
-    PAUSE = 284,
     F1 = 290,
     F2 = 291,
     F3 = 292,
@@ -159,48 +91,65 @@ enum Button
     KP_7 = 327,
     KP_8 = 328,
     KP_9 = 329,
-    KP_DECIMAL = 330,
-    KP_DIVIDE = 331,
-    KP_MULTIPLY = 332,
-    KP_SUBTRACT = 333,
+    NUM_0 = 48,
+    NUM_1 = 49,
+    NUM_2 = 50,
+    NUM_3 = 51,
+    NUM_4 = 52,
+    NUM_5 = 53,
+    NUM_6 = 54,
+    NUM_7 = 55,
+    NUM_8 = 56,
+    NUM_9 = 57,
+    SPACE = 32,
+    COMMA = 44,
+    MINUS = 45,
+    SLASH = 47,
+    EQUAL = 61,
+    UP = 265,
+    END = 269,
+    TAB = 258,
+    HOME = 268,
+    LEFT = 263,
+    DOWN = 264,
+    MENU = 348,
+    ENTER = 257,
+    RIGHT = 262,
+    PAUSE = 284,
+    PERIOD = 46,
+    INSERT = 260,
+    DELETE = 261,
+    ESCAPE = 256,
     KP_ADD = 334,
+    PAGE_UP = 266,
+    WORLD_1 = 161,
+    WORLD_2 = 162,
+    SEMICOLON = 59,
+    BACKSLASH = 92,
+    LEFT_ALT = 342,
     KP_ENTER = 335,
     KP_EQUAL = 336,
-    LEFT_SHIFT = 340,
-    LEFT_CONTROL = 341,
-    LEFT_ALT = 342,
-    LEFT_SUPER = 343,
-    RIGHT_SHIFT = 344,
-    RIGHT_CONTROL = 345,
+    NUM_LOCK = 282,
     RIGHT_ALT = 346,
+    BACKSPACE = 259,
+    KP_DIVIDE = 331,
+    PAGE_DOWN = 267,
+    APOSTROPHE = 39,
+    CAPS_LOCK = 280,
+    LEFT_SHIFT = 340,
+    LEFT_SUPER = 343,
+    KP_DECIMAL = 330,
     RIGHT_SUPER = 347,
-    MENU = 348,
-    MAX = MENU,
-};
-
-class State
-{
-  private:
-    uint8_t buttons[Keyboard::MAX + 1]{};
-
-  public:
-    State() = default;
-    State(const State&) = default;
-
-    void press(Keyboard::Button button)
-    {
-        buttons[static_cast<int>(button)] = 1;
-    }
-
-    void release(Keyboard::Button button)
-    {
-        buttons[static_cast<int>(button)] = 0;
-    }
-
-    bool is_pressed(Keyboard::Button button) const
-    {
-        return buttons[static_cast<int>(button)] == 1;
-    }
+    RIGHT_SHIFT = 344,
+    SCROLL_LOCK = 281,
+    KP_MULTIPLY = 332,
+    KP_SUBTRACT = 333,
+    LEFT_BRACKET = 91,
+    GRAVE_ACCENT = 96,
+    PRINT_SCREEN = 283,
+    LEFT_CONTROL = 341,
+    RIGHT_CONTROL = 345,
+    RIGHT_BRACKET = 93,
 };
 
 } // namespace Keyboard
@@ -210,55 +159,9 @@ namespace Mouse
 
 enum Button
 {
-    _1 = 0,
-    _2 = 1,
-    _3 = 2,
-    _4 = 3,
-    _5 = 4,
-    _6 = 5,
-    _7 = 6,
-    _8 = 7,
-    LEFT = _1,
-    RIGHT = _2,
-    MIDDLE = _3,
-    MIN = _1,
-    MAX = _8,
-};
-
-class State
-{
-  private:
-    std::tuple<double, double> position_;
-    uint8_t buttons[Mouse::Button::MAX + 1]{};
-
-  public:
-    State() = default;
-    State(const State&) = default;
-
-    void press(Mouse::Button button)
-    {
-        buttons[static_cast<int>(button)] = 1;
-    }
-
-    void release(Mouse::Button button)
-    {
-        buttons[static_cast<int>(button)] = 0;
-    }
-
-    bool is_pressed(Mouse::Button button) const
-    {
-        return buttons[static_cast<int>(button)] == 1;
-    }
-
-    std::tuple<double, double> position() const
-    {
-        return position_;
-    }
-
-    void set_position(double x, double y)
-    {
-        position_ = std::tuple<double, double>(x, y);
-    }
+    LEFT = 0,
+    RIGHT = 1,
+    MIDDLE = 2
 };
 
 } // namespace Mouse
@@ -286,7 +189,6 @@ struct GamePad
         CIRCLE = B,
         SQUARE = X,
         TRIANGLE = Y,
-        MAX = DPAD_LEFT,
     };
 
     enum Axis
@@ -299,58 +201,33 @@ struct GamePad
         RIGHT_TRIGGER = 5,
     };
 
-    class State
+    float axis[6]{};
+    Action buttons[15]{};
+
+    uint8_t id() const
     {
-      private:
-        float axes_[6]{};
-        uint8_t buttons[GamePad::Button::MAX + 1]{};
+        return id_;
+    }
 
-      public:
-        State() = default;
-        State(const State&) = default;
+    const std::string& name() const
+    {
+        return name_;
+    }
 
-        void press(GamePad::Button button)
-        {
-            buttons[static_cast<int>(button)] = 1;
-        }
+    GamePad(GamePad& other) : id_(other.id_), name_(other.name_)
+    {
+        std::copy(std::begin(other.axis), std::end(other.axis), std::begin(axis));
+        std::copy(std::begin(other.buttons), std::end(other.buttons), std::begin(buttons));
+    }
 
-        void release(GamePad::Button button)
-        {
-            buttons[static_cast<int>(button)] = 0;
-        }
+    GamePad(uint8_t id, const std::string& name) : id_(id), name_(name){};
 
-        bool is_pressed(GamePad::Button button) const
-        {
-            return buttons[static_cast<int>(button)] == 1;
-        }
-
-        float axes(GamePad::Axis axis) const
-        {
-            return axes_[axis];
-        }
-
-        void set_axes(GamePad::Axis axis, float value)
-        {
-            axes_[axis] = value;
-        }
-    };
-
-    std::string name;
-    Input::Joystick id;
-    Input::GamePad::State state;
+  private:
+    uint8_t id_{};
+    std::string name_{};
 };
 
 } // namespace Input
-
-struct InputContext
-{
-    Input::Mouse::State mouse{};
-    Input::Keyboard::State keyboard{};
-    Input::GamePad gamepads[Input::Joystick::MAX_ID + 1]{};
-
-    InputContext() = default;
-    InputContext(const InputContext&) = default;
-};
 
 } // namespace Konto
 
