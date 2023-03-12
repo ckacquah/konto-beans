@@ -15,6 +15,7 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include "application.h"
+#include "konto.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -24,23 +25,26 @@ namespace Konto::Editor
 
 std::shared_ptr<EditorContext> Application::context_{};
 
-void Application::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Application::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    auto _key = static_cast<Input::Keyboard::Button>(key);
-    (action == GLFW_PRESS) || (action == GLFW_REPEAT) ? context_->input.keyboard.press(_key)
-                                                      : context_->input.keyboard.release(_key);
+    context_->dispatcher.post(
+        MouseButtonEvent(static_cast<Input::Mouse::Button>(button), static_cast<Input::Action>(action)));
+}
+
+void Application::keyboard_button_callback(GLFWwindow* window, int button, int scancode, int action, int mods)
+{
+    context_->dispatcher.post(
+        KeyboardButtonEvent(static_cast<Input::Keyboard::Button>(button), static_cast<Input::Action>(action)));
 }
 
 void Application::cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    context_->input.mouse.set_position(x, y);
+    context_->dispatcher.post(MouseCursorEvent(x, y));
 }
 
-void Application::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+void Application::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    auto _button = static_cast<Input::Mouse::Button>(button);
-    (action == GLFW_PRESS) || (action == GLFW_REPEAT) ? context_->input.mouse.press(_button)
-                                                      : context_->input.mouse.release(_button);
+    context_->dispatcher.post(ScrollInputEvent(xoffset, yoffset));
 }
 
 Application::~Application()
@@ -73,7 +77,8 @@ void Application::start(const std::string& name, uint32_t width, uint32_t height
 
     glfwSetCursorPosCallback(window_->handle(), cursor_position_callback);
     glfwSetMouseButtonCallback(window_->handle(), mouse_button_callback);
-    glfwSetKeyCallback(window_->handle(), key_callback);
+    glfwSetKeyCallback(window_->handle(), keyboard_button_callback);
+    glfwSetScrollCallback(window_->handle(), scroll_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {

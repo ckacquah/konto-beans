@@ -16,9 +16,7 @@ class TimeStep
     std::chrono::system_clock::time_point timestep_{};
 
   public:
-    TimeStep() : timestep_(std::chrono::system_clock::now())
-    {
-    }
+    TimeStep() : timestep_(std::chrono::system_clock::now()){};
     TimeStep(const TimeStep& timestep) = default;
 
     float delta()
